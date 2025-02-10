@@ -10,7 +10,7 @@ import org.orbitmvi.orbit.compose.collectAsState
 fun ChartRoot(
     viewModel: ChartViewModel = hiltViewModel<ChartViewModel>(),
     modifier: Modifier,
-    onPlayerScreen: (id: Int) -> Unit,
+    onPlayerScreen: (id: Long) -> Unit,
 ) {
 
     ChartScreen(

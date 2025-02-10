@@ -34,6 +34,12 @@ android {
 }
 
 dependencies {
+    // Coil
+    implementation(libs.coil.compose)
+
+    // Shimmer
+    implementation(libs.shimmer.compose)
+
     //UI
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

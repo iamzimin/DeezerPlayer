@@ -11,7 +11,7 @@ fun ChartResponse.toChartData(): List<ChartData> {
             trackPreview = it.preview,
             artistName = it.artist.name,
             albumID = it.album.id,
-            albumCover = it.album.coverSmall,
+            albumCover = it.album.cover,
         )
     }
 }

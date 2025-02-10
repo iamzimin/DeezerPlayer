@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class AlbumResponse(
     @SerializedName("id") val id: Long,
-    @SerializedName("cover_small") val coverSmall: String,
+    @SerializedName("cover_medium") val cover: String,
 )
