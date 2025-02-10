@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">DeezerPlayer</string>
+
+    <!--Chart-->
+    <string name="chart">Chart</string>
+
+
+    <!--DownloadedTracks-->
+    <string name="downloaded">Downloaded</string>
+
+</resources>

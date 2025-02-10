@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "DeezerPlayer"
 include(":app")
- 
+include(":feature:chart")
+include(":core:resource")
+include(":core:api")
