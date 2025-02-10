@@ -6,3 +6,10 @@ sealed interface ServerResult<out D, out E: RootError> {
     data class Success<out D, out E: RootError>(val data: D): ServerResult<D, E>
     data class Error<out D, out E: RootError>(val error: E): ServerResult<D, E>
 }
+
+inline fun <D, E : RootError, R> ServerResult<D, E>.mapData(transform: (D) -> R): ServerResult<R, E> {
+    return when (this) {
+        is ServerResult.Success -> ServerResult.Success(transform(this.data))
+        is ServerResult.Error -> ServerResult.Error(this.error)
+    }
+}

@@ -1,13 +1,15 @@
 package com.evg.chart.domain.usecase
 
+import com.evg.api.domain.utils.NetworkError
+import com.evg.api.domain.utils.ServerResult
+import com.evg.chart.domain.model.ChartData
 import com.evg.chart.domain.repository.ChartRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetChartUseCase @Inject constructor(
     private val chartRepository: ChartRepository,
 ) {
-    /*suspend fun invoke(filter: ChartFilter): Flow<> {
-        TODO()
-    }*/
+    suspend fun invoke(): ServerResult<List<ChartData>, NetworkError> {
+        return chartRepository.getChartTracks()
+    }
 }

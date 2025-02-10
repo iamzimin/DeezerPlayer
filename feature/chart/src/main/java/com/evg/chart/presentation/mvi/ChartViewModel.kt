@@ -2,6 +2,7 @@ package com.evg.chart.presentation.mvi
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.evg.api.domain.utils.ServerResult
 import com.evg.chart.domain.usecase.ChartUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -26,9 +27,17 @@ class ChartViewModel @Inject constructor(
     }
 
     private fun getChart() = intent {
-        reduce { state.copy(isChartLoading = true) }
         viewModelScope.launch {
-
+            reduce { state.copy(isChartLoading = true) }
+            when (val response = chartUseCases.getChartUseCase.invoke()) {
+                is ServerResult.Success -> {
+                    reduce { state.copy(chartTracks = response.data) }
+                }
+                is ServerResult.Error -> {
+                    postSideEffect(ChartSideEffect.ChartLoadFail(error = response.error))
+                }
+            }
+            reduce { state.copy(isChartLoading = false) }
         }
     }
 }
