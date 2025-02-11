@@ -1,6 +1,20 @@
 <resources>
     <string name="app_name">DeezerPlayer</string>
 
+    <!--Shared-->
+    <string name="track_search">Track search</string>
+    <string name="list_tracks_is_empty">List tracks is empty</string>
+    <string name="swipe_to_update">Swipe to update</string>
+
+    <string name="request_timeout">Request Timeout</string>
+    <string name="too_many_requests">Too Many Requests</string>
+    <string name="not_found">Not found error</string>
+    <string name="server_error">Server Error</string>
+    <string name="protocol_error">Protocol error</string>
+    <string name="connect_error">Connect error</string>
+    <string name="unknown_error">Unknown Error</string>
+
+
     <!--Chart-->
     <string name="chart">Chart</string>
 

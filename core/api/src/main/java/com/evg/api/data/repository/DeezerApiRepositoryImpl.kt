@@ -1,6 +1,7 @@
 package com.evg.api.data.repository
 
 import com.evg.api.domain.models.ChartResponse
+import com.evg.api.domain.models.SearchTrackResponse
 import com.evg.api.domain.repository.DeezerApiRepository
 import com.evg.api.domain.service.DeezerApi
 import com.evg.api.domain.utils.NetworkError
@@ -37,6 +38,16 @@ class DeezerApiRepositoryImpl(
     override suspend fun getChart(): ServerResult<ChartResponse, NetworkError> {
         return safeApiCall {
             val response = deezerApi.getChart()
+
+            // TODO db
+
+            response
+        }
+    }
+
+    override suspend fun searchTrackByPage(query: String, index: Int): ServerResult<SearchTrackResponse, NetworkError> {
+        return safeApiCall {
+            val response = deezerApi.searchTrack(query = query, index = index)
 
             // TODO db
 

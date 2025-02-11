@@ -41,6 +41,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
+    // Paging
+    implementation(libs.jetpack.paging.common)
+
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)

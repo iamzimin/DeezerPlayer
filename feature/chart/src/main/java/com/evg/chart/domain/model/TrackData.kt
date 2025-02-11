@@ -1,6 +1,6 @@
 package com.evg.chart.domain.model
 
-data class ChartData(
+data class TrackData(
     val trackID: Long,
     val trackTitle: String,
     val trackPreview: String,

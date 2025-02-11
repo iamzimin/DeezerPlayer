@@ -7,3 +7,5 @@ enum class NetworkError: Error {
     SERIALIZATION,
     UNKNOWN,
 }
+
+class NetworkErrorException(error: NetworkError) : Exception("Network error: $error")

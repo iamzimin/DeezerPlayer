@@ -47,6 +47,11 @@ dependencies {
     // Swipe Refresh
     implementation(libs.swiperefresh.compose)
 
+    // Paging
+    implementation(libs.jetpack.paging.runtime)
+    implementation(libs.jetpack.paging.common)
+    implementation(libs.jetpack.paging.compose)
+
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)

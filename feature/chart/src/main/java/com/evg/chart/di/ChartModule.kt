@@ -1,5 +1,6 @@
 package com.evg.chart.di
 
+import com.evg.api.data.SearchTrackPageSourceRemote
 import com.evg.api.domain.repository.DeezerApiRepository
 import com.evg.chart.domain.repository.ChartRepository
 import com.evg.chart.data.repository.ChartRepositoryImpl
@@ -17,9 +18,11 @@ object ChartModule {
     @Singleton
     fun provideChartRepositoryModule(
         apiRepository: DeezerApiRepository,
+        searchTrackPageSourceRemote: SearchTrackPageSourceRemote,
     ): ChartRepository {
         return ChartRepositoryImpl(
             apiRepository = apiRepository,
+            searchTrackPageSourceRemote = searchTrackPageSourceRemote,
         )
     }
 }

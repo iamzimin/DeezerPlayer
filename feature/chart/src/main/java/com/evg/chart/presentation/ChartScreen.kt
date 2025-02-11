@@ -1,11 +1,11 @@
 package com.evg.chart.presentation
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,9 +13,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.evg.TrackTile
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.evg.SearchTextField
 import com.evg.chart.presentation.mvi.ChartAction
 import com.evg.chart.presentation.mvi.ChartState
 import com.evg.ui.theme.AppTheme
@@ -34,10 +36,11 @@ fun ChartScreen(
     onPlayerScreen: (id: Long) -> Unit,
 ) {
     val refreshingState = rememberSwipeRefreshState(isRefreshing = false)
+    val isSearchMode = rememberSaveable { mutableStateOf(false) }
+    var searchText by rememberSaveable { mutableStateOf("") }
 
     val chartTracks = state.chartTracks
-
-    val spacedByPadding = 15.dp
+    val foundedTracks = state.foundedTracks.collectAsLazyPagingItems()
 
     Column(
         modifier = modifier
@@ -46,12 +49,30 @@ fun ChartScreen(
                 vertical = VerticalPadding,
             ),
     ) {
+        SearchTextField(
+            onTextChangeDebounced = { text ->
+                searchText = text
+                isSearchMode.value = text.isNotBlank()
+                if (text.isNotBlank()) {
+                    dispatch(ChartAction.SearchTrack(query = text))
+                }
+            }
+        )
+
+        Spacer(modifier = Modifier.height(VerticalPadding))
+
         SwipeRefresh(
             modifier = Modifier
                 .fillMaxSize(),
             state = refreshingState,
-            swipeEnabled = !state.isChartLoading,
-            onRefresh = { dispatch(ChartAction.GetChart) },
+            swipeEnabled = !state.isChartLoading && foundedTracks.loadState.refresh !is LoadState.Loading,
+            onRefresh = {
+                if (isSearchMode.value) {
+                    dispatch(ChartAction.SearchTrack(query = searchText))
+                } else {
+                    dispatch(ChartAction.GetChart)
+                }
+            },
             indicator = { state, trigger ->
                 SwipeRefreshIndicator(
                     state = state,
@@ -61,25 +82,17 @@ fun ChartScreen(
                 )
             },
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(spacedByPadding)
-            ) {
-                items(
-                    count = chartTracks.size,
-                ) {
-                    val chartTrackData = chartTracks.getOrNull(it)
-                    chartTrackData?.let { data ->
-                        TrackTile(
-                            albumCover = data.albumCover,
-                            trackTitle = data.trackTitle,
-                            artistName = data.artistName,
-                            onClick = {
-                                //onPlayerScreen(data.trackID)
-                            }
-                        )
-                    }
-                }
+            if (isSearchMode.value) {
+                SearchLazyColumn(
+                    isChartLoading = state.isChartLoading,
+                    foundedTracks = foundedTracks,
+                )
+            } else {
+                ChartLazyColumn(
+                    isChartLoading = state.isChartLoading,
+                    chartTracks = chartTracks,
+                    onClick = onPlayerScreen,
+                )
             }
         }
     }
