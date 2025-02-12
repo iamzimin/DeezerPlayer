@@ -37,6 +37,7 @@ android {
 
 dependencies {
     implementation(project(":core:api"))
+    implementation(project(":core:database"))
     implementation(project(":core:resource"))
 
     // MVI Orbit

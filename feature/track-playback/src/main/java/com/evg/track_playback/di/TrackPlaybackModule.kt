@@ -14,6 +14,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
 import com.evg.api.domain.repository.DeezerApiRepository
+import com.evg.database.domain.repository.DatabaseRepository
 import com.evg.track_playback.data.repository.TrackPlaybackRepositoryImpl
 import com.evg.track_playback.domain.repository.TrackPlaybackRepository
 import com.evg.track_playback.presentation.notification.AudioNotificationManager
@@ -99,9 +100,11 @@ object TrackPlaybackModule {
     @Singleton
     fun provideTrackPlaybackRepositoryModule(
         apiRepository: DeezerApiRepository,
+        databaseRepository: DatabaseRepository,
     ): TrackPlaybackRepository {
         return TrackPlaybackRepositoryImpl(
             apiRepository = apiRepository,
+            databaseRepository = databaseRepository,
         )
     }
 }

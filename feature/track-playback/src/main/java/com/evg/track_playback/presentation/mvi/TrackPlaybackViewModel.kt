@@ -58,7 +58,9 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                 }
             }
         }
+    }
 
+    init {
         downloadManager.addListener(object : DownloadManager.Listener {
             override fun onDownloadChanged(
                 downloadManager: DownloadManager,
@@ -72,6 +74,9 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                         Download.STATE_DOWNLOADING -> {}
                         Download.STATE_COMPLETED -> {
                             reduce { state.copy(isTrackDownloading = false) }
+                            trackPlaybackRepository.saveTrackToDatabase(
+                                track = container.stateFlow.value.currentSelectedTrack //TODO!!!
+                            )
                             postSideEffect(TrackPlaybackSideEffect.TrackDownloadSuccess)
                         }
                         Download.STATE_FAILED -> {
@@ -87,8 +92,12 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
 
             override fun onDownloadRemoved(downloadManager: DownloadManager, download: Download) {}
         })
-        getAlbumList(trackId = trackId)
     }
+
+    init {
+        getAlbumListRemote(trackId = trackId)
+    }
+
 
     fun dispatch(action: TrackPlaybackAction) = viewModelScope.launch {
         when (action) {
@@ -118,7 +127,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
-    private fun getAlbumList(trackId: Long) = intent {
+    private fun getAlbumListRemote(trackId: Long) = intent {
         viewModelScope.launch {
             reduce { state.copy(isPlaylistLoading = true) }
             when (val response = trackPlaybackRepository.getAlbumByTrackId(id = trackId)) {
@@ -141,6 +150,24 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    private fun getTracksLocal(trackId: Long) = intent {
+        viewModelScope.launch {
+            reduce { state.copy(isPlaylistLoading = true) }
+            val response = trackPlaybackRepository.getTracksFromDatabase()
+            trackList = response
+
+            val startIndex = response.indexOfFirst {
+                    track -> track.trackID == trackId
+            }.let { if (it < 0) 0 else it }
+
+            setMediaItems(
+                trackLists = response,
+                startIndex = startIndex,
+            )
+            reduce { state.copy(isPlaylistLoading = false) }
+        }
+    }
+
     private fun setMediaItems(trackLists: List<TrackData>, startIndex: Int) {
         trackLists.map { audio ->
             MediaItem.Builder()
@@ -159,7 +186,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }.also { mediaItems ->
             audioServiceHandler.setMediaItemList(
                 mediaItems = mediaItems,
-                startIndex = startIndex
+                startIndex = startIndex,
             )
         }
     }

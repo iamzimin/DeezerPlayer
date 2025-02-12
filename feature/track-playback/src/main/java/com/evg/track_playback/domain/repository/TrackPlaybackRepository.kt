@@ -6,4 +6,6 @@ import com.evg.track_playback.domain.model.TrackData
 
 interface TrackPlaybackRepository {
     suspend fun getAlbumByTrackId(id: Long): ServerResult<List<TrackData>, NetworkError>
+    suspend fun getTracksFromDatabase(): List<TrackData>
+    suspend fun saveTrackToDatabase(track: TrackData)
 }
