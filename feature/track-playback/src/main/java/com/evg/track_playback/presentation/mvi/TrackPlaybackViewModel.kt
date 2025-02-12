@@ -12,9 +12,10 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import com.evg.api.domain.utils.ServerResult
 import com.evg.track_playback.domain.model.TrackData
 import com.evg.track_playback.domain.repository.TrackPlaybackRepository
+import com.evg.track_playback.presentation.model.AudioState
+import com.evg.track_playback.presentation.model.PlayerEvent
+import com.evg.track_playback.presentation.model.UIState
 import com.evg.track_playback.presentation.service.AudioServiceHandler
-import com.evg.track_playback.presentation.service.AudioState
-import com.evg.track_playback.presentation.service.PlayerEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -33,6 +34,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     override val container = container<TrackPlaybackState, TrackPlaybackSideEffect>(TrackPlaybackState())
     private val trackId = savedStateHandle.get<Long>("id") ?: error("trackId is required")
     private val isOnlineMode = savedStateHandle.get<Boolean>("isOnlineMode") ?: error("isOnlineMode is required")
+
     private var trackList: List<TrackData> = emptyList()
 
     init {
@@ -40,22 +42,24 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
             postSideEffect(TrackPlaybackSideEffect.StartService)
             audioServiceHandler.audioState.collectLatest { mediaState ->
                 when (mediaState) {
-                    AudioState.Initial -> reduce { state.copy(uiState = UIState.Initial) }
-                    is AudioState.Buffering -> calculateProgressValue(mediaState.progress)
+                    AudioState.Initial -> reduce { state.copy(uiState = UIState.PlaylistLoading) }
                     is AudioState.Playing -> reduce { state.copy(isPlaying = mediaState.isPlaying) }
                     is AudioState.Progress -> calculateProgressValue(mediaState.progress)
                     is AudioState.Ready -> {
-                        reduce {
-                            state.copy(
-                                duration = mediaState.duration,
-                                uiState = UIState.Ready,
-                            )
-                        }
+                        reduce { state.copy(duration = mediaState.duration) }
                         audioServiceHandler.onPlayerEvents(PlayerEvent.Play)
                     }
-                    is AudioState.PlayError -> postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(cause = mediaState.cause))
+                    is AudioState.PlayError -> {
+                        reduce { state.copy(uiState = UIState.PlaylistLoadingError) }
+                        postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(cause = mediaState.cause))
+                    }
                     is AudioState.CurrentPlaying -> {
-                        reduce { state.copy(currentSelectedTrack = trackList[mediaState.mediaItemIndex]) }
+                        val currentTrack = trackList.getOrNull(mediaState.mediaItemIndex)
+                        currentTrack?.let {
+                            reduce {
+                                state.copy(uiState = UIState.Ready(trackLists = trackList, currentTrack = it))
+                            }
+                        }
                     }
                 }
             }
@@ -71,14 +75,16 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
             ) {
                 intent {
                     when (download.state) {
-                        Download.STATE_QUEUED -> {}
-                        Download.STATE_STOPPED -> {}
-                        Download.STATE_DOWNLOADING -> {}
                         Download.STATE_COMPLETED -> {
                             reduce { state.copy(isTrackDownloading = false) }
-                            trackPlaybackRepository.saveTrackToDatabase(
-                                track = container.stateFlow.value.currentSelectedTrack //TODO!!!
-                            )
+
+                            val uiState = container.stateFlow.value.uiState
+                            if (uiState is UIState.Ready) {
+                                trackPlaybackRepository.saveTrackToDatabase(
+                                    track = uiState.currentTrack //TODO!!!
+                                )
+                            }
+
                             postSideEffect(TrackPlaybackSideEffect.TrackDownloadSuccess)
                         }
                         Download.STATE_FAILED -> {
@@ -86,8 +92,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                             reduce { state.copy(isTrackDownloading = false) }
                             postSideEffect(TrackPlaybackSideEffect.TrackDownloadFail(cause = cause))
                         }
-                        Download.STATE_REMOVING -> {}
-                        Download.STATE_RESTARTING -> {}
                     }
                 }
             }
@@ -113,8 +117,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
             is TrackPlaybackAction.PlayPause -> audioServiceHandler.onPlayerEvents(PlayerEvent.PlayPause)
             is TrackPlaybackAction.SeekTo -> {
                 audioServiceHandler.onPlayerEvents(
-                    PlayerEvent.SeekTo,
-                    seekPosition = ((container.stateFlow.value.duration * action.position) / 100f).toLong()
+                    PlayerEvent.SeekTo(((container.stateFlow.value.duration * action.position) / 100f).toLong()),
                 )
             }
             is TrackPlaybackAction.UpdateProgress -> {
@@ -126,7 +129,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
 
     private fun getAlbumListRemote(trackId: Long) = intent {
         viewModelScope.launch {
-            reduce { state.copy(isPlaylistLoading = true) }
+            reduce { state.copy(uiState = UIState.PlaylistLoading) }
             when (val response = trackPlaybackRepository.getAlbumByTrackId(id = trackId)) {
                 is ServerResult.Success -> {
                     trackList = response.data
@@ -140,16 +143,16 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                     )
                 }
                 is ServerResult.Error -> {
+                    reduce { state.copy(uiState = UIState.PlaylistLoadingError) }
                     postSideEffect(TrackPlaybackSideEffect.PlaylistLoadFail(error = response.error))
                 }
             }
-            reduce { state.copy(isPlaylistLoading = false) }
         }
     }
 
     private fun getTracksLocal(trackId: Long) = intent {
         viewModelScope.launch {
-            reduce { state.copy(isPlaylistLoading = true) }
+            reduce { state.copy(uiState = UIState.PlaylistLoading) }
             val response = trackPlaybackRepository.getTracksFromDatabase()
             trackList = response
 
@@ -161,7 +164,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                 trackLists = response,
                 startIndex = startIndex,
             )
-            reduce { state.copy(isPlaylistLoading = false) }
         }
     }
 
@@ -203,7 +205,3 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     }
 }
 
-sealed class UIState {
-    data object Initial: UIState()
-    data object Ready: UIState()
-}

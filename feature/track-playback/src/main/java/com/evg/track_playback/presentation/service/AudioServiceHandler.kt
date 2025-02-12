@@ -16,6 +16,8 @@ import androidx.media3.exoplayer.offline.DownloadHelper
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
+import com.evg.track_playback.presentation.model.AudioState
+import com.evg.track_playback.presentation.model.PlayerEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -59,7 +61,6 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
 
     suspend fun onPlayerEvents(
         playerEvent: PlayerEvent,
-        seekPosition: Long = 0,
     ) {
         when (playerEvent) {
             PlayerEvent.DownloadCurrentTrack -> downloadTrack()
@@ -67,8 +68,8 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
             PlayerEvent.SeekToNext -> exoPlayer.seekToNext()
             PlayerEvent.Play -> play()
             PlayerEvent.PlayPause -> playOrPause()
-            PlayerEvent.SeekTo -> exoPlayer.seekTo(seekPosition)
             PlayerEvent.Stop -> stopProgressUpdate()
+            is PlayerEvent.SeekTo -> exoPlayer.seekTo(playerEvent.seekPosition)
             is PlayerEvent.UpdateProgress -> {
                 exoPlayer.seekTo(
                     (exoPlayer.duration * playerEvent.newProgress).toLong()
@@ -79,19 +80,8 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
 
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
-            ExoPlayer.STATE_BUFFERING -> _audioState.value =
-                AudioState.Buffering(exoPlayer.currentPosition)
-
             ExoPlayer.STATE_READY -> _audioState.value =
                 AudioState.Ready(exoPlayer.duration)
-
-            Player.STATE_ENDED -> {
-                //TODO()
-            }
-
-            Player.STATE_IDLE -> {
-                //TODO()
-            }
         }
     }
 
@@ -169,25 +159,4 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
             override fun onPrepareError(helper: DownloadHelper, e: IOException) {}
         })
     }
-}
-
-sealed class PlayerEvent {
-    data object DownloadCurrentTrack : PlayerEvent()
-    data object Play : PlayerEvent()
-    data object PlayPause : PlayerEvent()
-    data object SeekToPrev : PlayerEvent()
-    data object SeekToNext : PlayerEvent()
-    data object SeekTo : PlayerEvent()
-    data object Stop : PlayerEvent()
-    data class UpdateProgress(val newProgress: Float) : PlayerEvent()
-}
-
-sealed class AudioState {
-    data object Initial : AudioState()
-    data class Ready(val duration: Long) : AudioState()
-    data class Progress(val progress: Long) : AudioState()
-    data class Buffering(val progress: Long) : AudioState()
-    data class Playing(val isPlaying: Boolean) : AudioState()
-    data class PlayError(val cause: String) : AudioState()
-    data class CurrentPlaying(val mediaItemIndex: Int) : AudioState()
 }
