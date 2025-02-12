@@ -45,7 +45,6 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
 
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
-                Log.e("ExoPlayer", "Ошибка: ${error.message}", error.cause)
                 _audioState.value = AudioState.PlayError(cause = error.cause?.localizedMessage ?: "unknown") //TODO
             }
         })
@@ -66,6 +65,7 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
             PlayerEvent.DownloadCurrentTrack -> downloadTrack()
             PlayerEvent.SeekToPrev -> exoPlayer.seekToPrevious()
             PlayerEvent.SeekToNext -> exoPlayer.seekToNext()
+            PlayerEvent.Play -> play()
             PlayerEvent.PlayPause -> playOrPause()
             PlayerEvent.SeekTo -> exoPlayer.seekTo(seekPosition)
             PlayerEvent.Stop -> stopProgressUpdate()
@@ -74,26 +74,6 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
                     (exoPlayer.duration * playerEvent.newProgress).toLong()
                 )
             }
-
-            /*PlayerEvent.SelectedAudioChange -> {
-                when (selectedAudioIndex) {
-                    exoPlayer.currentMediaItemIndex -> {
-                        playOrPause()
-                    }
-
-                    else -> {
-                        exoPlayer.seekToDefaultPosition(selectedAudioIndex)
-                        _audioState.value = AudioState.Playing(
-                            isPlaying = true
-                        )
-                        exoPlayer.playWhenReady = true
-                        startProgressUpdate()
-                    }
-                }
-            }
-            PlayerEvent.Backward -> exoPlayer.seekBack()
-            PlayerEvent.Forward -> exoPlayer.seekForward()
-            */
         }
     }
 
@@ -127,12 +107,20 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
 
     private suspend fun playOrPause() {
         if (exoPlayer.isPlaying) {
-            exoPlayer.pause()
-            stopProgressUpdate()
+            pause()
         } else {
-            exoPlayer.play()
-            startProgressUpdate()
+            play()
         }
+    }
+
+    private fun pause() {
+        exoPlayer.pause()
+        stopProgressUpdate()
+    }
+
+    private suspend fun play() {
+        exoPlayer.play()
+        startProgressUpdate()
     }
 
     private suspend fun startProgressUpdate() = job.run {
@@ -185,12 +173,10 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
 
 sealed class PlayerEvent {
     data object DownloadCurrentTrack : PlayerEvent()
+    data object Play : PlayerEvent()
     data object PlayPause : PlayerEvent()
-    //data object SelectedAudioChange : PlayerEvent()
-    //data object Backward : PlayerEvent()
     data object SeekToPrev : PlayerEvent()
     data object SeekToNext : PlayerEvent()
-    //data object Forward : PlayerEvent()
     data object SeekTo : PlayerEvent()
     data object Stop : PlayerEvent()
     data class UpdateProgress(val newProgress: Float) : PlayerEvent()

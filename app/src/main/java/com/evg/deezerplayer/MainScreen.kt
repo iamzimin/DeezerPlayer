@@ -77,7 +77,7 @@ fun MainScreen() {
                         ChartRoot(
                             modifier = Modifier.fillMaxSize().padding(paddingValues),
                             onPlayerScreen = { id ->
-                                navController.navigate(route = Route.TrackPlayer(id = id))
+                                navController.navigate(route = Route.TrackPlayer(id = id, isOnlineMode = true))
                             }
                         )
                     }

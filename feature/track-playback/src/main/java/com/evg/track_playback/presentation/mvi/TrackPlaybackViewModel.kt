@@ -31,7 +31,8 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     downloadManager: DownloadManager,
 ): ContainerHost<TrackPlaybackState, TrackPlaybackSideEffect>, ViewModel() {
     override val container = container<TrackPlaybackState, TrackPlaybackSideEffect>(TrackPlaybackState())
-    private val trackId: Long = savedStateHandle.get<Long>("id") ?: error("Track ID is required")
+    private val trackId = savedStateHandle.get<Long>("id") ?: error("trackId is required")
+    private val isOnlineMode = savedStateHandle.get<Boolean>("isOnlineMode") ?: error("isOnlineMode is required")
     private var trackList: List<TrackData> = emptyList()
 
     init {
@@ -50,6 +51,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                                 uiState = UIState.Ready,
                             )
                         }
+                        audioServiceHandler.onPlayerEvents(PlayerEvent.Play)
                     }
                     is AudioState.PlayError -> postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(cause = mediaState.cause))
                     is AudioState.CurrentPlaying -> {
@@ -95,7 +97,11 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     }
 
     init {
-        getAlbumListRemote(trackId = trackId)
+        if (isOnlineMode) {
+            getAlbumListRemote(trackId = trackId)
+        } else {
+            getTracksLocal(trackId = trackId)
+        }
     }
 
 
@@ -115,15 +121,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                 audioServiceHandler.onPlayerEvents(PlayerEvent.UpdateProgress(action.newProgress))
                 intent { reduce { state.copy(progress = action.newProgress) } }
             }
-            /*is TrackPlaybackAction.SelectedAudioChange -> {
-                audioServiceHandler.onPlayerEvents(
-                    PlayerEvent.SelectedAudioChange,
-                    selectedAudioIndex = action.index
-                )
-            }
-            TrackPlaybackAction.Backward -> audioServiceHandler.onPlayerEvents(PlayerEvent.Backward)
-            TrackPlaybackAction.Forward -> audioServiceHandler.onPlayerEvents(PlayerEvent.Forward)
-            */
         }
     }
 
