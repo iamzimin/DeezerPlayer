@@ -1,11 +1,21 @@
 package com.evg.track_playback.presentation.service
 
 
+import android.content.Context
 import android.util.Log
+import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.offline.Download
+import androidx.media3.exoplayer.offline.DownloadHelper
+import androidx.media3.exoplayer.offline.DownloadManager
+import androidx.media3.exoplayer.offline.DownloadRequest
+import androidx.media3.exoplayer.offline.DownloadService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,9 +25,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
+import java.lang.Exception
 import javax.inject.Inject
 
-class AudioServiceHandler @Inject constructor(
+class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
+    private val context: Context,
     private val exoPlayer: ExoPlayer,
 ) : Player.Listener {
     private val _audioState: MutableStateFlow<AudioState> =
@@ -33,7 +46,7 @@ class AudioServiceHandler @Inject constructor(
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
                 Log.e("ExoPlayer", "Ошибка: ${error.message}", error.cause)
-                _audioState.value = AudioState.Error(cause = error.cause?.toString() ?: "unknown") //TODO
+                _audioState.value = AudioState.PlayError(cause = error.cause?.localizedMessage ?: "unknown") //TODO
             }
         })
     }
@@ -50,6 +63,7 @@ class AudioServiceHandler @Inject constructor(
         seekPosition: Long = 0,
     ) {
         when (playerEvent) {
+            PlayerEvent.DownloadCurrentTrack -> downloadTrack()
             PlayerEvent.SeekToPrev -> exoPlayer.seekToPrevious()
             PlayerEvent.SeekToNext -> exoPlayer.seekToNext()
             PlayerEvent.PlayPause -> playOrPause()
@@ -135,9 +149,42 @@ class AudioServiceHandler @Inject constructor(
         _audioState.value = AudioState.Playing(isPlaying = false)
     }
 
+    @OptIn(UnstableApi::class)
+    private fun downloadTrack() {
+        val currentMedia = exoPlayer.currentMediaItem ?: return
+
+        val downloadHelper = DownloadHelper.forMediaItem(
+            context,
+            currentMedia,
+            DefaultRenderersFactory(context),
+            DefaultHttpDataSource.Factory()
+        )
+
+        downloadHelper.prepare(object : DownloadHelper.Callback {
+            override fun onPrepared(helper: DownloadHelper) {
+                val downloadRequest = DownloadRequest.Builder(
+                    currentMedia.mediaId,
+                    currentMedia.localConfiguration!!.uri,
+                )
+                    .setMimeType(currentMedia.localConfiguration!!.mimeType)
+                    .setData(currentMedia.mediaMetadata.toString().toByteArray())
+                    .build()
+
+                DownloadService.sendAddDownload(
+                    context,
+                    AudioDownloadService::class.java,
+                    downloadRequest,
+                    true,
+                )
+            }
+
+            override fun onPrepareError(helper: DownloadHelper, e: IOException) {}
+        })
+    }
 }
 
 sealed class PlayerEvent {
+    data object DownloadCurrentTrack : PlayerEvent()
     data object PlayPause : PlayerEvent()
     //data object SelectedAudioChange : PlayerEvent()
     //data object Backward : PlayerEvent()
@@ -155,6 +202,6 @@ sealed class AudioState {
     data class Progress(val progress: Long) : AudioState()
     data class Buffering(val progress: Long) : AudioState()
     data class Playing(val isPlaying: Boolean) : AudioState()
-    data class Error(val cause: String) : AudioState()
+    data class PlayError(val cause: String) : AudioState()
     data class CurrentPlaying(val mediaItemIndex: Int) : AudioState()
 }

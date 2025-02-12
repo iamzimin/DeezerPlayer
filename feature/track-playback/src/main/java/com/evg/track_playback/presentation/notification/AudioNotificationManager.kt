@@ -17,24 +17,23 @@ import com.evg.resource.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-private const val NOTIFICATION_ID = 101
-private const val NOTIFICATION_CHANNEL_NAME = "playback"
-private const val NOTIFICATION_CHANNEL_ID = "playback"
-
 class AudioNotificationManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val exoPlayer: ExoPlayer,
 ) {
+    companion object {
+        private const val NOTIFICATION_ID = 101
+        private const val NOTIFICATION_CHANNEL_NAME = "playback"
+        private const val NOTIFICATION_CHANNEL_ID = "playback"
+    }
+
     private val notificationManager: NotificationManagerCompat =
         NotificationManagerCompat.from(context)
 
     init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel()
-        }
+        createNotificationChannel()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @UnstableApi
     fun startNotificationService(
         mediaSessionService: MediaSessionService,
@@ -44,7 +43,6 @@ class AudioNotificationManager @Inject constructor(
         startForeGroundNotificationService(mediaSessionService)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun startForeGroundNotificationService(mediaSessionService: MediaSessionService) {
         val notification = Notification.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setCategory(Notification.CATEGORY_SERVICE)
@@ -77,7 +75,6 @@ class AudioNotificationManager @Inject constructor(
             }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,

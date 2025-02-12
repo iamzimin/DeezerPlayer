@@ -5,10 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
+import com.evg.PreviewImage
 import com.evg.track_playback.domain.model.TrackData
 import com.evg.track_playback.presentation.mvi.TrackPlaybackAction
 import com.evg.track_playback.presentation.mvi.TrackPlaybackState
@@ -77,31 +81,9 @@ fun TrackPlaybackScreen(
             overflow = TextOverflow.Ellipsis,
         )
 
-        SubcomposeAsyncImage( //TODO вынести
-            model = state.currentSelectedTrack.albumCover,
-            modifier = Modifier
-                .size(200.dp)
-                .clip(RoundedCornerShape(BorderRadius)),
-            contentDescription = state.currentSelectedTrack.albumCover,
-            alignment = Alignment.CenterStart,
-            contentScale = ContentScale.Crop,
-            loading = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(shape = RoundedCornerShape(BorderRadius))
-                        .shimmer(),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.LightGray)
-                    )
-                }
-            },
-            error = {
-
-            },
+        PreviewImage(
+            albumCover = state.currentSelectedTrack.albumCover,
+            size = 200.dp,
         )
 
         Slider(
@@ -120,7 +102,7 @@ fun TrackPlaybackScreen(
                 onClick = {
                     dispatch(TrackPlaybackAction.SeekToPrev)
                 }
-            ) { Text("Backward") }
+            ) { Text("Back") }
             Button(
                 onClick = {
                     dispatch(TrackPlaybackAction.PlayPause)
@@ -130,7 +112,19 @@ fun TrackPlaybackScreen(
                 onClick = {
                     dispatch(TrackPlaybackAction.SeekToNext)
                 }
-            ) { Text("Forward") }
+            ) { Text("Forw") }
+
+            Spacer(Modifier.width(20.dp))
+
+            if (state.isTrackDownloading) {
+                CircularProgressIndicator()
+            } else {
+                Button(
+                    onClick = {
+                        dispatch(TrackPlaybackAction.SaveTrack)
+                    }
+                ) { Text("Save") }
+            }
         }
 
     }

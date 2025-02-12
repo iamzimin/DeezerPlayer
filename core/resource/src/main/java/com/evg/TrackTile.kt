@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import com.evg.ui.extensions.clickableRipple
@@ -53,31 +54,9 @@ fun TrackTile(
             }
     ) {
         Row {
-            SubcomposeAsyncImage(
-                model = albumCover,
-                modifier = Modifier
-                    .size(height)
-                    .clip(RoundedCornerShape(BorderRadius)),
-                contentDescription = albumCover,
-                alignment = Alignment.CenterStart,
-                contentScale = ContentScale.Crop,
-                loading = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(shape = RoundedCornerShape(BorderRadius))
-                            .shimmer(),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.LightGray)
-                        )
-                    }
-                },
-                error = {
-                    ImageError()
-                },
+            PreviewImage(
+                albumCover = albumCover,
+                size = height,
             )
 
             Column(
@@ -108,29 +87,6 @@ fun TrackTile(
 
         }
     }
-}
-
-@Composable
-private fun ImageError() {
-    /*Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clip(shape = RoundedCornerShape(BorderRadius))
-            .border(
-                0.5.dp,
-                MaterialTheme.colorScheme.onSurface,
-                RoundedCornerShape(BorderRadius)
-            )
-    ) {
-        Icon(
-            modifier = Modifier
-                .size(70.dp)
-                .align(Alignment.Center),
-            painter = painterResource(id = R.drawable.),
-            contentDescription = "Error",
-            tint =Color.Red,
-        )
-    }*/
 }
 
 @Composable

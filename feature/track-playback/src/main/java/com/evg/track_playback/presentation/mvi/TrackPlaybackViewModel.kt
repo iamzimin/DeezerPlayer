@@ -1,10 +1,14 @@
 package com.evg.track_playback.presentation.mvi
 
+import androidx.annotation.OptIn
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.offline.Download
+import androidx.media3.exoplayer.offline.DownloadManager
 import com.evg.api.domain.utils.ServerResult
 import com.evg.track_playback.domain.model.TrackData
 import com.evg.track_playback.domain.repository.TrackPlaybackRepository
@@ -16,14 +20,15 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
-import java.util.concurrent.TimeUnit
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
-class TrackPlaybackViewModel @Inject constructor(
+class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     private val audioServiceHandler: AudioServiceHandler,
     private val trackPlaybackRepository: TrackPlaybackRepository,
     savedStateHandle: SavedStateHandle,
+    downloadManager: DownloadManager,
 ): ContainerHost<TrackPlaybackState, TrackPlaybackSideEffect>, ViewModel() {
     override val container = container<TrackPlaybackState, TrackPlaybackSideEffect>(TrackPlaybackState())
     private val trackId: Long = savedStateHandle.get<Long>("id") ?: error("Track ID is required")
@@ -36,7 +41,7 @@ class TrackPlaybackViewModel @Inject constructor(
                 when (mediaState) {
                     AudioState.Initial -> reduce { state.copy(uiState = UIState.Initial) }
                     is AudioState.Buffering -> calculateProgressValue(mediaState.progress)
-                    is AudioState.Playing ->  reduce { state.copy(isPlaying = mediaState.isPlaying) }
+                    is AudioState.Playing -> reduce { state.copy(isPlaying = mediaState.isPlaying) }
                     is AudioState.Progress -> calculateProgressValue(mediaState.progress)
                     is AudioState.Ready -> {
                         reduce {
@@ -46,19 +51,48 @@ class TrackPlaybackViewModel @Inject constructor(
                             )
                         }
                     }
-                    is AudioState.Error -> postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(cause = mediaState.cause))
+                    is AudioState.PlayError -> postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(cause = mediaState.cause))
                     is AudioState.CurrentPlaying -> {
                         reduce { state.copy(currentSelectedTrack = trackList[mediaState.mediaItemIndex]) }
                     }
                 }
             }
         }
+
+        downloadManager.addListener(object : DownloadManager.Listener {
+            override fun onDownloadChanged(
+                downloadManager: DownloadManager,
+                download: Download,
+                finalException: Exception?,
+            ) {
+                intent {
+                    when (download.state) {
+                        Download.STATE_QUEUED -> {}
+                        Download.STATE_STOPPED -> {}
+                        Download.STATE_DOWNLOADING -> {}
+                        Download.STATE_COMPLETED -> {
+                            reduce { state.copy(isTrackDownloading = false) }
+                            postSideEffect(TrackPlaybackSideEffect.TrackDownloadSuccess)
+                        }
+                        Download.STATE_FAILED -> {
+                            val cause = finalException?.cause?.localizedMessage ?: "unknown"
+                            reduce { state.copy(isTrackDownloading = false) }
+                            postSideEffect(TrackPlaybackSideEffect.TrackDownloadFail(cause = cause))
+                        }
+                        Download.STATE_REMOVING -> {}
+                        Download.STATE_RESTARTING -> {}
+                    }
+                }
+            }
+
+            override fun onDownloadRemoved(downloadManager: DownloadManager, download: Download) {}
+        })
         getAlbumList(trackId = trackId)
     }
 
     fun dispatch(action: TrackPlaybackAction) = viewModelScope.launch {
         when (action) {
-            TrackPlaybackAction.SaveTrack -> TODO()
+            TrackPlaybackAction.SaveTrack -> audioServiceHandler.onPlayerEvents(PlayerEvent.DownloadCurrentTrack)
             TrackPlaybackAction.SeekToPrev -> audioServiceHandler.onPlayerEvents(PlayerEvent.SeekToPrev)
             TrackPlaybackAction.SeekToNext -> audioServiceHandler.onPlayerEvents(PlayerEvent.SeekToNext)
             is TrackPlaybackAction.PlayPause -> audioServiceHandler.onPlayerEvents(PlayerEvent.PlayPause)
@@ -114,6 +148,7 @@ class TrackPlaybackViewModel @Inject constructor(
                 .setLiveConfiguration(
                     MediaItem.LiveConfiguration.Builder().setMaxPlaybackSpeed(1.02f).build()
                 )
+                .setMediaId(audio.trackID.toString())
                 .setMediaMetadata(
                     MediaMetadata.Builder()
                         .setAlbumArtist(audio.artistName)

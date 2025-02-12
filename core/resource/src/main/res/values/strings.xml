@@ -22,4 +22,9 @@
     <!--DownloadedTracks-->
     <string name="downloaded">Downloaded</string>
 
+
+    <!--Track playback-->
+    <string name="track_download">Track download</string>
+    <string name="track_success_download">Track was downloaded successfully</string>
+
 </resources>

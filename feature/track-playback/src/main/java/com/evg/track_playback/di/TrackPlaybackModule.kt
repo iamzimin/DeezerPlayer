@@ -5,7 +5,11 @@ import androidx.annotation.OptIn
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.cache.Cache
+import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
@@ -38,12 +42,26 @@ object TrackPlaybackModule {
     fun provideExoPlayer(
         @ApplicationContext context: Context,
         audioAttributes: AudioAttributes,
-    ): ExoPlayer = ExoPlayer.Builder(context)
-        .setMediaSourceFactory(DefaultMediaSourceFactory(context).setLiveTargetOffsetMs(5000))
-        .setAudioAttributes(audioAttributes, true)
-        .setHandleAudioBecomingNoisy(true)
-        .setTrackSelector(DefaultTrackSelector(context))
-        .build()
+        cache: Cache,
+        upstreamDataSourceFactory: DataSource.Factory,
+    ): ExoPlayer {
+        val cacheDataSourceFactory: DataSource.Factory =
+            CacheDataSource.Factory()
+                .setCache(cache)
+                .setUpstreamDataSourceFactory(upstreamDataSourceFactory)
+                .setCacheWriteDataSinkFactory(null)
+
+        return ExoPlayer.Builder(context)
+            .setMediaSourceFactory(
+                DefaultMediaSourceFactory(context)
+                    .setLiveTargetOffsetMs(5000)
+                    .setDataSourceFactory(cacheDataSourceFactory)
+            )
+            .setAudioAttributes(audioAttributes, true)
+            .setHandleAudioBecomingNoisy(true)
+            .setTrackSelector(DefaultTrackSelector(context))
+            .build()
+    }
 
 
     @Provides
@@ -63,10 +81,18 @@ object TrackPlaybackModule {
         exoPlayer = player
     )
 
+    @OptIn(UnstableApi::class)
     @Provides
     @Singleton
-    fun provideServiceHandler(exoPlayer: ExoPlayer): AudioServiceHandler =
-        AudioServiceHandler(exoPlayer)
+    fun provideServiceHandler(
+        @ApplicationContext context: Context,
+        exoPlayer: ExoPlayer,
+    ): AudioServiceHandler {
+        return AudioServiceHandler(
+            context = context,
+            exoPlayer = exoPlayer,
+        )
+    }
 
 
     @Provides
