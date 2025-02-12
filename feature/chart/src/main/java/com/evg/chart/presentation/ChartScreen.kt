@@ -36,7 +36,7 @@ fun ChartScreen(
     onPlayerScreen: (id: Long) -> Unit,
 ) {
     val refreshingState = rememberSwipeRefreshState(isRefreshing = false)
-    val isSearchMode = rememberSaveable { mutableStateOf(false) }
+    var isSearchMode by rememberSaveable { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
 
     val chartTracks = state.chartTracks
@@ -52,7 +52,7 @@ fun ChartScreen(
         SearchTextField(
             onTextChangeDebounced = { text ->
                 searchText = text
-                isSearchMode.value = text.isNotBlank()
+                isSearchMode = text.isNotBlank()
                 if (text.isNotBlank()) {
                     dispatch(ChartAction.SearchTrack(query = text))
                 }
@@ -67,7 +67,7 @@ fun ChartScreen(
             state = refreshingState,
             swipeEnabled = !state.isChartLoading && foundedTracks.loadState.refresh !is LoadState.Loading,
             onRefresh = {
-                if (isSearchMode.value) {
+                if (isSearchMode) {
                     dispatch(ChartAction.SearchTrack(query = searchText))
                 } else {
                     dispatch(ChartAction.GetChart)
@@ -82,10 +82,11 @@ fun ChartScreen(
                 )
             },
         ) {
-            if (isSearchMode.value) {
+            if (isSearchMode) {
                 SearchLazyColumn(
                     isChartLoading = state.isChartLoading,
                     foundedTracks = foundedTracks,
+                    onClick = onPlayerScreen,
                 )
             } else {
                 ChartLazyColumn(

@@ -1,24 +1,20 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt.plugin)
-    alias(libs.plugins.kotlin.serializable)
     alias(libs.plugins.jetbrains.kotlin.ksp)
 }
 
 android {
-    namespace = "com.evg.deezerplayer"
+    namespace = "com.evg.track_playback"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.evg.deezerplayer"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -37,28 +33,35 @@ android {
     kotlinOptions {
         jvmTarget = "21"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
+    implementation(project(":core:api"))
     implementation(project(":core:resource"))
-    implementation(project(":feature:chart"))
-    implementation(project(":feature:track-playback"))
 
-    //Navigation
-    implementation(libs.androidx.ui.navigation)
+    // MVI Orbit
+    implementation(libs.mvi.orbit.core)
+    implementation(libs.mvi.orbit.viewmodel)
+    implementation(libs.mvi.orbit.compose)
 
-    // Serialization
-    implementation(libs.kotlinx.serialization)
+    // Swipe Refresh
+    //implementation(libs.swiperefresh.compose)
+
+    // Coil
+    implementation(libs.coil.compose)
+
+    // Shimmer
+    implementation(libs.shimmer.compose)
 
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.dagger.hilt.navigation)
 
-    // Coil
-    implementation(libs.coil.compose)
+    // Media
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.session)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -68,7 +71,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.compose.material)
     debugImplementation(libs.androidx.ui.tooling)
 
     testImplementation(libs.junit)

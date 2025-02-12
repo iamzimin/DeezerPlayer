@@ -40,7 +40,7 @@ fun ChartLazyColumn(
                             trackTitle = data.trackTitle,
                             artistName = data.artistName,
                             onClick = {
-                                //onClick(data.trackID)
+                                onClick(data.trackID)
                             }
                         )
                     }

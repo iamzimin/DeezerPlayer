@@ -26,6 +26,7 @@ import com.evg.deezerplayer.navigation.Route
 import com.evg.deezerplayer.navigation.bottomNavPadding
 import com.evg.deezerplayer.snackbar.ObserveAsEvent
 import com.evg.deezerplayer.snackbar.SwipeableSnackBarHost
+import com.evg.track_playback.presentation.TrackPlaybackRoot
 import com.evg.ui.snackbar.SnackBarController
 import com.evg.ui.theme.AppTheme
 import kotlinx.coroutines.launch
@@ -88,10 +89,11 @@ fun MainScreen() {
 
                     }
                 }
-                composable<Route.TrackPlayer> { entry ->
+                composable<Route.TrackPlayer> {
                     DeezerPlayerScaffold { paddingValues ->
-                        val trackPlayer = entry.toRoute<Route.TrackPlayer>()
-
+                        TrackPlaybackRoot(
+                            modifier = Modifier.fillMaxSize().padding(paddingValues),
+                        )
                     }
                 }
             }

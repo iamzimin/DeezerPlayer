@@ -1,7 +1,7 @@
-package com.evg.chart.domain.mapper
+package com.evg.track_playback.domain.mapper
 
 import com.evg.api.domain.models.TrackResponse
-import com.evg.chart.domain.model.TrackData
+import com.evg.track_playback.domain.model.TrackData
 
 fun TrackResponse.toTrackData(): TrackData {
     return TrackData(

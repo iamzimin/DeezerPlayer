@@ -9,7 +9,7 @@ import com.evg.api.domain.repository.DeezerApiRepository
 import com.evg.api.domain.utils.NetworkError
 import com.evg.api.domain.utils.ServerResult
 import com.evg.api.domain.utils.mapData
-import com.evg.chart.domain.mapper.toChartData
+import com.evg.chart.domain.mapper.toTrackData
 import com.evg.chart.domain.model.TrackData
 import com.evg.chart.domain.repository.ChartRepository
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,7 @@ class ChartRepositoryImpl(
     override suspend fun getChartTracks(): ServerResult<List<TrackData>, NetworkError> {
         return apiRepository.getChart().mapData { chartResponse ->
             chartResponse.tracks.data.map { trackResponse ->
-                trackResponse.toChartData()
+                trackResponse.toTrackData()
             }
         }
     }
@@ -37,7 +37,7 @@ class ChartRepositoryImpl(
             .map { pagingData ->
                 pagingData.map { data ->
                     data.mapData {
-                        it.toChartData()
+                        it.toTrackData()
                     }
                 }
             }

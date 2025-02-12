@@ -2,11 +2,16 @@ package com.evg.api.data.repository
 
 import com.evg.api.domain.models.ChartResponse
 import com.evg.api.domain.models.SearchTrackResponse
+import com.evg.api.domain.models.TrackResponse
+import com.evg.api.domain.models.WrappedAlbumData
 import com.evg.api.domain.repository.DeezerApiRepository
 import com.evg.api.domain.service.DeezerApi
 import com.evg.api.domain.utils.NetworkError
 import com.evg.api.domain.utils.ServerResult
 import com.google.gson.JsonParseException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import java.net.SocketTimeoutException
@@ -36,22 +41,33 @@ class DeezerApiRepositoryImpl(
     }
 
     override suspend fun getChart(): ServerResult<ChartResponse, NetworkError> {
-        return safeApiCall {
-            val response = deezerApi.getChart()
-
-            // TODO db
-
-            response
-        }
+        return safeApiCall { deezerApi.getChart() }
     }
 
     override suspend fun searchTrackByPage(query: String, index: Int): ServerResult<SearchTrackResponse, NetworkError> {
+        return safeApiCall { deezerApi.searchTrack(query = query, index = index) }
+    }
+
+    override suspend fun getAlbumByTrackId(id: Long): ServerResult<List<TrackResponse>, NetworkError> {
         return safeApiCall {
-            val response = deezerApi.searchTrack(query = query, index = index)
+            val trackResponse: TrackResponse = deezerApi.getTrackById(id = id)
+            val albumResponse: WrappedAlbumData = deezerApi.getAlbumById(id = trackResponse.album.id)
 
-            // TODO db
+            val albumTrackIds = albumResponse.data.map { it.id }
+            val otherTrackIds = albumTrackIds.filter { it != trackResponse.id }
 
-            response
+            val trackResponses = coroutineScope {
+                otherTrackIds.map { trackId ->
+                    async { deezerApi.getTrackById(trackId) }
+                }.awaitAll()
+            }
+
+            val allTracks = listOf(trackResponse) + trackResponses
+            val sortedTracks = allTracks.sortedBy { track ->
+                albumResponse.data.indexOfFirst { album -> album.id == track.id }
+            }
+
+            sortedTracks
         }
     }
 }

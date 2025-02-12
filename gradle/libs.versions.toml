@@ -27,6 +27,8 @@ coil = "2.7.0"
 appcompatVersion = "1.7.0"
 materialVersion = "1.12.0"
 composeMaterial = "1.4.0"
+media = "1.7.0"
+media3 = "1.5.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -91,6 +93,13 @@ kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-seria
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+
+# Media
+androidx-media = { group = "androidx.media", name = "media", version.ref = "media" }
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
+androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

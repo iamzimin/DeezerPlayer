@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.flowOf
 fun SearchLazyColumn(
     isChartLoading: Boolean,
     foundedTracks: LazyPagingItems<ServerResult<TrackData, NetworkError>>,
+    onClick: (id: Long) -> Unit,
 ) {
     when (foundedTracks.loadState.refresh) {
         is LoadState.Loading -> {
@@ -77,7 +78,7 @@ fun SearchLazyColumn(
                                 trackTitle = item.data.trackTitle,
                                 artistName = item.data.artistName,
                                 onClick = {
-                                    //onPlayerScreen(data.trackID)
+                                    onClick(item.data.trackID)
                                 }
                             )
                         }
@@ -126,6 +127,7 @@ fun SearchLazyColumnPreview(darkTheme: Boolean = true) {
                         )
                     )
                 ).collectAsLazyPagingItems(),
+                onClick = {},
             )
         }
     }
