@@ -64,6 +64,7 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
     ) {
         when (playerEvent) {
             PlayerEvent.DownloadCurrentTrack -> downloadTrack()
+            PlayerEvent.RemoveCurrentTrack -> removeTrack()
             PlayerEvent.SeekToPrev -> exoPlayer.seekToPrevious()
             PlayerEvent.SeekToNext -> exoPlayer.seekToNext()
             PlayerEvent.Play -> play()
@@ -158,5 +159,17 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
 
             override fun onPrepareError(helper: DownloadHelper, e: IOException) {}
         })
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun removeTrack() {
+        val currentMedia = exoPlayer.currentMediaItem ?: return
+
+        DownloadService.sendRemoveDownload(
+            context,
+            AudioDownloadService::class.java,
+            currentMedia.mediaId,
+            true
+        )
     }
 }

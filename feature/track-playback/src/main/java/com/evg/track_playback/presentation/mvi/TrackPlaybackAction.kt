@@ -2,6 +2,7 @@ package com.evg.track_playback.presentation.mvi
 
 sealed class TrackPlaybackAction {
     data object SaveTrack: TrackPlaybackAction()
+    data object RemoveTrack: TrackPlaybackAction()
 
     data object PlayPause: TrackPlaybackAction()
     //data class SelectedAudioChange(val index: Int): TrackPlaybackAction()

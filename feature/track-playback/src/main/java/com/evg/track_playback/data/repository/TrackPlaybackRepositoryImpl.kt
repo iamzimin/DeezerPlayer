@@ -16,11 +16,13 @@ class TrackPlaybackRepositoryImpl(
 ): TrackPlaybackRepository {
     override suspend fun getAlbumByTrackId(id: Long): ServerResult<List<TrackData>, NetworkError> {
         return apiRepository.getAlbumByTrackId(id = id).mapData { trackList ->
+            val downloadedTrackIds = databaseRepository.getAllTracks().map { it.trackId }.toSet()
             trackList.map { trackResponse ->
-                trackResponse.toTrackData()
+                trackResponse.toTrackData(isDownloaded = downloadedTrackIds.contains(trackResponse.id))
             }
         }
     }
+
 
     override suspend fun getTracksFromDatabase(): List<TrackData> {
         return databaseRepository.getAllTracks().map {
@@ -30,5 +32,9 @@ class TrackPlaybackRepositoryImpl(
 
     override suspend fun saveTrackToDatabase(track: TrackData) {
         databaseRepository.insertTrack(track = track.toTracksDBO())
+    }
+
+    override suspend fun removeTrackByIdFromDatabase(id: Long) {
+        databaseRepository.removeTrackById(id = id)
     }
 }

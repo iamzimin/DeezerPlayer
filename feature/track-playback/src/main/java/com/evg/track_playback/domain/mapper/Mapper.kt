@@ -4,7 +4,7 @@ import com.evg.api.domain.models.TrackResponse
 import com.evg.database.domain.models.TracksDBO
 import com.evg.track_playback.domain.model.TrackData
 
-fun TrackResponse.toTrackData(): TrackData {
+fun TrackResponse.toTrackData(isDownloaded: Boolean): TrackData {
     return TrackData(
         trackID = this.id,
         trackTitle = this.title,
@@ -12,6 +12,7 @@ fun TrackResponse.toTrackData(): TrackData {
         artistName = this.artist.name,
         albumID = this.album.id,
         albumCover = this.album.cover,
+        isDownloaded = isDownloaded,
     )
 }
 
@@ -23,6 +24,7 @@ fun TracksDBO.toTrackData(): TrackData {
         artistName = this.artistName,
         albumID = this.albumID,
         albumCover = this.albumCover,
+        isDownloaded = true,
     )
 }
 

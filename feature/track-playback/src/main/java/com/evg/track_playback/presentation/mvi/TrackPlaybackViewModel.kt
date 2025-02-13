@@ -78,14 +78,20 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                         Download.STATE_COMPLETED -> {
                             reduce { state.copy(isTrackDownloading = false) }
 
-                            val uiState = container.stateFlow.value.uiState
-                            if (uiState is UIState.Ready) {
-                                trackPlaybackRepository.saveTrackToDatabase(
-                                    track = uiState.currentTrack //TODO!!!
-                                )
+                            val track = getTrackFromPlaylistById(idStr = download.request.id)
+                            track?.let {
+                                trackPlaybackRepository.saveTrackToDatabase(track = it)
                             }
 
                             postSideEffect(TrackPlaybackSideEffect.TrackDownloadSuccess)
+                        }
+                        Download.STATE_REMOVING -> {
+                            val track = getTrackFromPlaylistById(idStr = download.request.id)
+                            track?.let {
+                                trackPlaybackRepository.removeTrackByIdFromDatabase(id = it.trackID)
+                            }
+
+                            postSideEffect(TrackPlaybackSideEffect.TrackRemoveSuccess)
                         }
                         Download.STATE_FAILED -> {
                             val cause = finalException?.cause?.localizedMessage ?: "unknown"
@@ -112,6 +118,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     fun dispatch(action: TrackPlaybackAction) = viewModelScope.launch {
         when (action) {
             TrackPlaybackAction.SaveTrack -> audioServiceHandler.onPlayerEvents(PlayerEvent.DownloadCurrentTrack)
+            TrackPlaybackAction.RemoveTrack -> audioServiceHandler.onPlayerEvents(PlayerEvent.RemoveCurrentTrack)
             TrackPlaybackAction.SeekToPrev -> audioServiceHandler.onPlayerEvents(PlayerEvent.SeekToPrev)
             TrackPlaybackAction.SeekToNext -> audioServiceHandler.onPlayerEvents(PlayerEvent.SeekToNext)
             is TrackPlaybackAction.PlayPause -> audioServiceHandler.onPlayerEvents(PlayerEvent.PlayPause)
@@ -190,18 +197,25 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        viewModelScope.launch {
-            audioServiceHandler.onPlayerEvents(PlayerEvent.Stop)
-        }
-        super.onCleared()
-    }
-
     private fun calculateProgressValue(currentProgress: Long) = intent {
         reduce {
             val progress = if (currentProgress > 0) ((currentProgress.toFloat() / state.duration.toFloat()) * 100f) else 0f
             state.copy(progress = progress)
         }
+    }
+
+    private fun getTrackFromPlaylistById(idStr: String): TrackData? {
+        val id = idStr.toLongOrNull()
+        return if (id != null) {
+            trackList.find { it.trackID == id }
+        } else { null }
+    }
+
+    override fun onCleared() {
+        viewModelScope.launch {
+            audioServiceHandler.onPlayerEvents(PlayerEvent.Stop)
+        }
+        super.onCleared()
     }
 }
 

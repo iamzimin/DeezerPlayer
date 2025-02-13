@@ -7,4 +7,5 @@ data class TrackData(
     val artistName: String,
     val albumID: Long,
     val albumCover: String,
+    val isDownloaded: Boolean,
 )

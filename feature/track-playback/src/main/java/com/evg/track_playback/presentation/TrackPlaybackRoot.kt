@@ -26,28 +26,33 @@ fun TrackPlaybackRoot(
 ) {
     val context = LocalContext.current
     val trackDownloadedString = stringResource(R.string.track_success_download)
+    val trackRemoveString = stringResource(R.string.track_success_remove)
     var isServiceRunning by rememberSaveable { mutableStateOf(false) }
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is TrackPlaybackSideEffect.TrackPlaybackFail -> {
-                SnackBarController.sendEvent(event = SnackBarEvent(message = sideEffect.cause))
-            }
-            is TrackPlaybackSideEffect.PlaylistLoadFail -> {
-                SnackBarController.sendEvent(event = SnackBarEvent(message = sideEffect.error.name)) //TODO
-            }
-            is TrackPlaybackSideEffect.TrackDownloadFail -> {
-                SnackBarController.sendEvent(event = SnackBarEvent(message = sideEffect.cause)) //TODO
-            }
-            TrackPlaybackSideEffect.TrackDownloadSuccess -> {
-                SnackBarController.sendEvent(event = SnackBarEvent(message = trackDownloadedString))
-            }
             is TrackPlaybackSideEffect.StartService -> {
                 if (!isServiceRunning) {
                     val intent = Intent(context, AudioService::class.java)
                     context.startForegroundService(intent)
                     isServiceRunning = true
                 }
+            }
+            is TrackPlaybackSideEffect.TrackPlaybackFail -> {
+                SnackBarController.sendEvent(SnackBarEvent(sideEffect.cause))
+            }
+            is TrackPlaybackSideEffect.PlaylistLoadFail -> {
+                SnackBarController.sendEvent(SnackBarEvent(sideEffect.error.name)) //TODO
+            }
+
+            TrackPlaybackSideEffect.TrackDownloadSuccess -> {
+                SnackBarController.sendEvent(SnackBarEvent(trackDownloadedString))
+            }
+            is TrackPlaybackSideEffect.TrackDownloadFail -> {
+                SnackBarController.sendEvent(SnackBarEvent(sideEffect.cause)) //TODO
+            }
+            is TrackPlaybackSideEffect.TrackRemoveSuccess -> {
+                SnackBarController.sendEvent(SnackBarEvent(trackRemoveString))
             }
         }
     }

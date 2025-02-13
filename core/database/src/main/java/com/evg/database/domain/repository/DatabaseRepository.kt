@@ -5,5 +5,6 @@ import com.evg.database.domain.models.TracksDBO
 interface DatabaseRepository {
     suspend fun getAllTracks(): List<TracksDBO>
     suspend fun insertTrack(track: TracksDBO)
+    suspend fun removeTrackById(id: Long)
     suspend fun getTrackById(id: Long): TracksDBO?
 }

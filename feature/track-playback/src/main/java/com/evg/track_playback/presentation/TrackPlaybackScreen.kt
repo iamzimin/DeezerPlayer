@@ -155,9 +155,17 @@ fun TrackPlaybackScreen(
                             modifier = Modifier
                                 .size(iconSize)
                                 .clickableRipple {
-                                    dispatch(TrackPlaybackAction.SaveTrack)
+                                    if (uiState.currentTrack.isDownloaded) {
+                                        dispatch(TrackPlaybackAction.RemoveTrack)
+                                    } else {
+                                        dispatch(TrackPlaybackAction.SaveTrack)
+                                    }
                                 },
-                            painter = painterResource(R.drawable.download),
+                            painter = if (uiState.currentTrack.isDownloaded) {
+                                painterResource(R.drawable.trash)
+                            } else {
+                                painterResource(R.drawable.download)
+                            },
                             contentDescription = null,
                             tint = AppTheme.colors.text,
                         )

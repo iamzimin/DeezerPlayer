@@ -14,6 +14,9 @@ interface TracksDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrack(track: TracksDBO)
 
+    @Query("DELETE FROM TracksDBO WHERE trackId = :id")
+    suspend fun removeTrackById(id: Long)
+
     @Query("SELECT * FROM TracksDBO WHERE trackId = :id LIMIT 1")
     suspend fun getTrackById(id: Long): TracksDBO?
 }

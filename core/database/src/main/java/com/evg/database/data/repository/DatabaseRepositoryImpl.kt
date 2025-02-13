@@ -15,6 +15,10 @@ class DatabaseRepositoryImpl(
         tracksDatabase.tracksDao.insertTrack(track)
     }
 
+    override suspend fun removeTrackById(id: Long) {
+        tracksDatabase.tracksDao.removeTrackById(id = id)
+    }
+
     override suspend fun getTrackById(id: Long): TracksDBO? {
         return tracksDatabase.tracksDao.getTrackById(id)
     }
