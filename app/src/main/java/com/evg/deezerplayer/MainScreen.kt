@@ -99,6 +99,7 @@ fun MainScreen() {
                     DeezerPlayerScaffold { paddingValues ->
                         TrackPlaybackRoot(
                             modifier = Modifier.fillMaxSize().padding(paddingValues),
+                            onPreviousScreen = { navController.popBackStack() },
                         )
                     }
                 }

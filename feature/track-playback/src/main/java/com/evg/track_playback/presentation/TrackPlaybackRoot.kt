@@ -23,6 +23,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun TrackPlaybackRoot(
     viewModel: TrackPlaybackViewModel = hiltViewModel<TrackPlaybackViewModel>(),
     modifier: Modifier,
+    onPreviousScreen: () -> Unit,
 ) {
     val context = LocalContext.current
     val trackDownloadedString = stringResource(R.string.track_success_download)
@@ -61,5 +62,6 @@ fun TrackPlaybackRoot(
         state = viewModel.collectAsState().value,
         dispatch = viewModel::dispatch,
         modifier = modifier,
+        onPreviousScreen = onPreviousScreen,
     )
 }

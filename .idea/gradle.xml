@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/chart" />
             <option value="$PROJECT_DIR$/feature/track-playback" />
+            <option value="$PROJECT_DIR$/feature/tracks-downloaded" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

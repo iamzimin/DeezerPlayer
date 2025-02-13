@@ -2,7 +2,6 @@ package com.evg.track_playback.presentation.service
 
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -11,9 +10,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadHelper
-import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import com.evg.track_playback.presentation.model.AudioState
@@ -28,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.lang.Exception
 import javax.inject.Inject
 
 class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
@@ -64,17 +60,20 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
     ) {
         when (playerEvent) {
             PlayerEvent.DownloadCurrentTrack -> downloadTrack()
-            PlayerEvent.RemoveCurrentTrack -> removeTrack()
+            is PlayerEvent.RemoveCurrentTrack -> removeTrack(playerEvent.isRemoveCurrentMedia)
             PlayerEvent.SeekToPrev -> exoPlayer.seekToPrevious()
             PlayerEvent.SeekToNext -> exoPlayer.seekToNext()
             PlayerEvent.Play -> play()
             PlayerEvent.PlayPause -> playOrPause()
             PlayerEvent.Stop -> stopProgressUpdate()
+            is PlayerEvent.PlayByIndex -> {
+                if (playerEvent.index != exoPlayer.currentMediaItemIndex) {
+                    exoPlayer.seekToDefaultPosition(playerEvent.index)
+                }
+            }
             is PlayerEvent.SeekTo -> exoPlayer.seekTo(playerEvent.seekPosition)
             is PlayerEvent.UpdateProgress -> {
-                exoPlayer.seekTo(
-                    (exoPlayer.duration * playerEvent.newProgress).toLong()
-                )
+                exoPlayer.seekTo((exoPlayer.duration * playerEvent.newProgress).toLong())
             }
         }
     }
@@ -95,6 +94,11 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
             stopProgressUpdate()
         }
     }
+
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        _audioState.value = AudioState.CurrentPlaying(exoPlayer.currentMediaItemIndex)
+    }
+
 
     private suspend fun playOrPause() {
         if (exoPlayer.isPlaying) {
@@ -162,9 +166,12 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
     }
 
     @OptIn(UnstableApi::class)
-    private fun removeTrack() {
+    private fun removeTrack(isRemoveCurrentMedia: Boolean) {
         val currentMedia = exoPlayer.currentMediaItem ?: return
 
+        if (isRemoveCurrentMedia) {
+            exoPlayer.removeMediaItem(exoPlayer.currentMediaItemIndex)
+        }
         DownloadService.sendRemoveDownload(
             context,
             AudioDownloadService::class.java,

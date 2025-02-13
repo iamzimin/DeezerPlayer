@@ -5,8 +5,8 @@ sealed class TrackPlaybackAction {
     data object RemoveTrack: TrackPlaybackAction()
 
     data object PlayPause: TrackPlaybackAction()
-    //data class SelectedAudioChange(val index: Int): TrackPlaybackAction()
     data class SeekTo(val position: Float): TrackPlaybackAction()
+    data class PlayByIndex(val index: Int): TrackPlaybackAction()
     data object SeekToNext: TrackPlaybackAction()
     data object SeekToPrev: TrackPlaybackAction()
     //data object Backward: TrackPlaybackAction()

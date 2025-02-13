@@ -19,13 +19,12 @@ import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun PreviewImage(
+    modifier: Modifier,
     albumCover: String,
-    size: Dp
 ) {
     SubcomposeAsyncImage(
         model = albumCover,
-        modifier = Modifier
-            .size(size)
+        modifier = modifier
             .clip(RoundedCornerShape(BorderRadius)),
         contentDescription = albumCover,
         alignment = Alignment.CenterStart,
