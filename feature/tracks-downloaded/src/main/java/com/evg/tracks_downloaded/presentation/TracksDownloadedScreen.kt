@@ -1,4 +1,4 @@
-package com.evg.chart.presentation
+package com.evg.tracks_downloaded.presentation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -14,14 +14,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.evg.chart.presentation.mapper.toTrackTileContent
-import com.evg.ui.TracksLazyColumn
 import com.evg.ui.SearchTextField
-import com.evg.chart.presentation.mvi.ChartAction
-import com.evg.chart.presentation.mvi.ChartState
-import com.evg.ui.model.TrackTileContent
+import com.evg.ui.TracksLazyColumn
+import com.evg.tracks_downloaded.presentation.mvi.TracksDownloadedAction
+import com.evg.tracks_downloaded.presentation.mvi.TracksDownloadedState
 import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.HorizontalPadding
@@ -31,9 +27,9 @@ import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
-fun ChartScreen(
-    state: ChartState,
-    dispatch: (action: ChartAction) -> Unit,
+fun TracksDownloadedScreen(
+    state: TracksDownloadedState,
+    dispatch: (action: TracksDownloadedAction) -> Unit,
     modifier: Modifier = Modifier,
     onPlayerScreen: (id: Long) -> Unit,
 ) {
@@ -41,8 +37,7 @@ fun ChartScreen(
     var isSearchMode by rememberSaveable { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
 
-    val chartTracks = state.chartTracks
-    val foundedTracks = state.foundedTracks.collectAsLazyPagingItems()
+    val tracksDownloaded = state.tracksDownloaded
 
     Column(
         modifier = modifier
@@ -55,9 +50,7 @@ fun ChartScreen(
             onTextChangeDebounced = { text ->
                 searchText = text
                 isSearchMode = text.isNotBlank()
-                if (text.isNotBlank()) {
-                    dispatch(ChartAction.SearchTrack(query = text))
-                }
+                dispatch(TracksDownloadedAction.FilterTracksOnScreen(query = text))
             }
         )
 
@@ -67,12 +60,12 @@ fun ChartScreen(
             modifier = Modifier
                 .fillMaxSize(),
             state = refreshingState,
-            swipeEnabled = !state.isChartLoading && foundedTracks.loadState.refresh !is LoadState.Loading,
+            swipeEnabled = !state.isTracksLoading,
             onRefresh = {
                 if (isSearchMode) {
-                    dispatch(ChartAction.SearchTrack(query = searchText))
+                    dispatch(TracksDownloadedAction.SearchTracksDownloaded(query = searchText))
                 } else {
-                    dispatch(ChartAction.GetChart)
+                    dispatch(TracksDownloadedAction.GetTracksDownloaded)
                 }
             },
             indicator = { state, trigger ->
@@ -84,19 +77,11 @@ fun ChartScreen(
                 )
             },
         ) {
-            if (isSearchMode) {
-                SearchLazyColumn(
-                    isChartLoading = state.isChartLoading,
-                    foundedTracks = foundedTracks,
-                    onClick = onPlayerScreen,
-                )
-            } else {
-                TracksLazyColumn(
-                    isTracksLoading = state.isChartLoading,
-                    tracks = chartTracks,
-                    onClick = onPlayerScreen,
-                )
-            }
+            TracksLazyColumn(
+                isTracksLoading = state.isTracksLoading,
+                tracks = tracksDownloaded,
+                onClick = onPlayerScreen,
+            )
         }
     }
 }
@@ -106,9 +91,9 @@ fun ChartScreen(
 fun ChartScreenPreview(darkTheme: Boolean = true) {
     DeezerPlayerTheme(darkTheme = darkTheme) {
         Surface(color = AppTheme.colors.background) {
-            ChartScreen(
-                state = ChartState(
-                    isChartLoading = false,
+            TracksDownloadedScreen(
+                state = TracksDownloadedState(
+                    isTracksLoading = false,
                 ),
                 dispatch = {},
                 onPlayerScreen = {},

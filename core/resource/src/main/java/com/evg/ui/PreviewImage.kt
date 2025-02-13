@@ -1,4 +1,4 @@
-package com.evg
+package com.evg.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

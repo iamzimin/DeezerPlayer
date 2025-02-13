@@ -76,22 +76,20 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                 intent {
                     when (download.state) {
                         Download.STATE_COMPLETED -> {
-                            reduce { state.copy(isTrackDownloading = false) }
-
                             val track = getTrackFromPlaylistById(idStr = download.request.id)
                             track?.let {
                                 trackPlaybackRepository.saveTrackToDatabase(track = it)
+                                postSideEffect(TrackPlaybackSideEffect.TrackDownloadSuccess)
                             }
 
-                            postSideEffect(TrackPlaybackSideEffect.TrackDownloadSuccess)
+                            reduce { state.copy(isTrackDownloading = false) }
                         }
                         Download.STATE_REMOVING -> {
                             val track = getTrackFromPlaylistById(idStr = download.request.id)
                             track?.let {
                                 trackPlaybackRepository.removeTrackByIdFromDatabase(id = it.trackID)
+                                postSideEffect(TrackPlaybackSideEffect.TrackRemoveSuccess)
                             }
-
-                            postSideEffect(TrackPlaybackSideEffect.TrackRemoveSuccess)
                         }
                         Download.STATE_FAILED -> {
                             val cause = finalException?.cause?.localizedMessage ?: "unknown"

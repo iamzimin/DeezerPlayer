@@ -1,4 +1,4 @@
-package com.evg.chart.domain.model
+package com.evg.tracks_downloaded.domain.model
 
 data class TrackData(
     val trackID: Long,

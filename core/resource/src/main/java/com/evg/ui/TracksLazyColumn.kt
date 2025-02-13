@@ -1,4 +1,4 @@
-package com.evg.chart.presentation
+package com.evg.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -8,22 +8,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.evg.TrackTile
-import com.evg.TrackTileShimmer
-import com.evg.TracksNotFound
-import com.evg.chart.domain.model.TrackData
+import com.evg.ui.model.TrackTileContent
 import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.LazyColumnSpacedBy
 
 @Composable
-fun ChartLazyColumn(
-    isChartLoading: Boolean,
-    chartTracks: List<TrackData>,
+fun TracksLazyColumn(
+    isTracksLoading: Boolean,
+    tracks: List<TrackTileContent>,
     onClick: (id: Long) -> Unit,
 ) {
-    if (!isChartLoading) {
-        if (chartTracks.isEmpty()) {
+    if (!isTracksLoading) {
+        if (tracks.isEmpty()) {
             TracksNotFound()
         } else {
             LazyColumn(
@@ -31,9 +28,9 @@ fun ChartLazyColumn(
                 verticalArrangement = Arrangement.spacedBy(LazyColumnSpacedBy)
             ) {
                 items(
-                    count = chartTracks.size,
+                    count = tracks.size,
                 ) {
-                    val chartTrackData = chartTracks.getOrNull(it)
+                    val chartTrackData = tracks.getOrNull(it)
                     chartTrackData?.let { data ->
                         TrackTile(
                             albumCover = data.albumCover,
@@ -64,9 +61,9 @@ fun ChartLazyColumn(
 fun ChartLazyColumnPreview(darkTheme: Boolean = true) {
     DeezerPlayerTheme(darkTheme = darkTheme) {
         Surface(color = AppTheme.colors.background) {
-            ChartLazyColumn(
-                isChartLoading = false,
-                chartTracks = emptyList(),
+            TracksLazyColumn(
+                isTracksLoading = false,
+                tracks = emptyList(),
                 onClick = {},
             )
         }

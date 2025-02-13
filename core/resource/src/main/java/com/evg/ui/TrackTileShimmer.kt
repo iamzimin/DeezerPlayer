@@ -1,4 +1,4 @@
-package com.evg
+package com.evg.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background

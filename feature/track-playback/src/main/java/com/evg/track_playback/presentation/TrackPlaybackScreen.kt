@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
@@ -30,8 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.evg.PreviewImage
-import com.evg.track_playback.domain.model.TrackData
+import com.evg.ui.PreviewImage
 import com.evg.track_playback.presentation.mvi.TrackPlaybackAction
 import com.evg.track_playback.presentation.mvi.TrackPlaybackState
 import com.evg.ui.theme.AppTheme
