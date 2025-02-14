@@ -23,6 +23,7 @@ import com.evg.api.domain.utils.ServerResult
 import com.evg.resource.R
 import com.evg.ui.mapper.toErrorMessage
 import com.evg.ui.model.TrackTileContent
+import com.evg.ui.snackbar.SnackBarAction
 import com.evg.ui.snackbar.SnackBarController
 import com.evg.ui.snackbar.SnackBarEvent
 import com.evg.ui.theme.AppTheme
@@ -35,8 +36,10 @@ fun SearchLazyColumn(
     isChartLoading: Boolean,
     foundedTracks: LazyPagingItems<ServerResult<TrackTileContent, NetworkError>>,
     onClick: (id: Long) -> Unit,
+    searchTrack: () -> Unit,
 ) {
     val context = LocalContext.current
+    val updateString = stringResource(id = R.string.update)
 
     when (foundedTracks.loadState.refresh) {
         is LoadState.Loading -> {
@@ -77,7 +80,13 @@ fun SearchLazyColumn(
                         is ServerResult.Error -> {
                             val errorMessage = item.error.toErrorMessage(context)
                             LaunchedEffect(errorMessage) {
-                                SnackBarController.sendEvent(SnackBarEvent(errorMessage))
+                                SnackBarController.sendEvent(SnackBarEvent(
+                                    message = errorMessage,
+                                    action = SnackBarAction(
+                                        name = updateString,
+                                        action = { searchTrack() },
+                                    ),
+                                ))
                             }
                         }
                         null -> {}
@@ -90,7 +99,13 @@ fun SearchLazyColumn(
             TracksNotFound()
             val errorMessage = stringResource(id = R.string.error_server)
             LaunchedEffect(errorMessage) {
-                SnackBarController.sendEvent(SnackBarEvent(errorMessage))
+                SnackBarController.sendEvent(SnackBarEvent(
+                    message = errorMessage,
+                    action = SnackBarAction(
+                        name = updateString,
+                        action = { searchTrack() },
+                    ),
+                ))
             }
         }
     }
@@ -121,6 +136,7 @@ fun SearchLazyColumnPreview(darkTheme: Boolean = true) {
                     )
                 ).collectAsLazyPagingItems(),
                 onClick = {},
+                searchTrack = {},
             )
         }
     }

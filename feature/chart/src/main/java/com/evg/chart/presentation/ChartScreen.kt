@@ -16,12 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.evg.chart.presentation.mapper.toTrackTileContent
 import com.evg.ui.TracksLazyColumn
 import com.evg.ui.SearchTextField
 import com.evg.chart.presentation.mvi.ChartAction
 import com.evg.chart.presentation.mvi.ChartState
-import com.evg.ui.model.TrackTileContent
 import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.HorizontalPadding
@@ -89,6 +87,7 @@ fun ChartScreen(
                     isChartLoading = state.isChartLoading,
                     foundedTracks = foundedTracks,
                     onClick = onPlayerScreen,
+                    searchTrack = { dispatch(ChartAction.SearchTrack(searchText)) },
                 )
             } else {
                 TracksLazyColumn(

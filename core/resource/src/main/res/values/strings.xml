@@ -24,6 +24,7 @@
     <string name="track_search">Track search</string>
     <string name="list_tracks_is_empty">List tracks is empty</string>
     <string name="swipe_to_update">Swipe to update</string>
+    <string name="update">Update</string>
 
     <string name="error_unknown">Unknown error</string>
     <string name="error_request_timeout">Request timeout</string>

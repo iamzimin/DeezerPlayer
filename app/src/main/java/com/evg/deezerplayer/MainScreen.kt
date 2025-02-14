@@ -1,8 +1,6 @@
 package com.evg.deezerplayer
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -18,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.evg.chart.presentation.ChartRoot
 import com.evg.deezerplayer.navigation.BottomBar
 import com.evg.deezerplayer.navigation.DeezerPlayerScaffold
@@ -32,7 +29,6 @@ import com.evg.ui.snackbar.SnackBarController
 import com.evg.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
@@ -65,43 +61,41 @@ fun MainScreen() {
         containerColor = AppTheme.colors.background,
         snackbarHost = { SwipeableSnackBarHost(hostState = snackBarHostState) }
     ) {
-        SharedTransitionLayout {
-            NavHost(
-                navController = navController,
-                startDestination = startDestination,
-                modifier = Modifier.background(AppTheme.colors.background),
-            ) {
-                composable<Route.Chart> {
-                    DeezerPlayerScaffold(
-                        modifier = Modifier.padding(bottom = bottomNavPadding)
-                    ) { paddingValues ->
-                        ChartRoot(
-                            modifier = Modifier.fillMaxSize().padding(paddingValues),
-                            onPlayerScreen = { id ->
-                                navController.navigate(route = Route.TrackPlayer(id = id, isOnlineMode = true))
-                            }
-                        )
-                    }
+        NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            modifier = Modifier.background(AppTheme.colors.background),
+        ) {
+            composable<Route.Chart> {
+                DeezerPlayerScaffold(
+                    modifier = Modifier.padding(bottom = bottomNavPadding)
+                ) { paddingValues ->
+                    ChartRoot(
+                        modifier = Modifier.fillMaxSize().padding(paddingValues),
+                        onPlayerScreen = { id ->
+                            navController.navigate(route = Route.TrackPlayer(id = id, isOnlineMode = true))
+                        }
+                    )
                 }
-                composable<Route.DownloadedTracks> {
-                    DeezerPlayerScaffold(
-                        modifier = Modifier.padding(bottom = bottomNavPadding)
-                    ) { paddingValues ->
-                        TracksDownloadedRoot(
-                            modifier = Modifier.fillMaxSize().padding(paddingValues),
-                            onPlayerScreen = { id ->
-                                navController.navigate(route = Route.TrackPlayer(id = id, isOnlineMode = false))
-                            }
-                        )
-                    }
+            }
+            composable<Route.DownloadedTracks> {
+                DeezerPlayerScaffold(
+                    modifier = Modifier.padding(bottom = bottomNavPadding)
+                ) { paddingValues ->
+                    TracksDownloadedRoot(
+                        modifier = Modifier.fillMaxSize().padding(paddingValues),
+                        onPlayerScreen = { id ->
+                            navController.navigate(route = Route.TrackPlayer(id = id, isOnlineMode = false))
+                        }
+                    )
                 }
-                composable<Route.TrackPlayer> {
-                    DeezerPlayerScaffold { paddingValues ->
-                        TrackPlaybackRoot(
-                            modifier = Modifier.fillMaxSize().padding(paddingValues),
-                            onPreviousScreen = { navController.popBackStack() },
-                        )
-                    }
+            }
+            composable<Route.TrackPlayer> {
+                DeezerPlayerScaffold { paddingValues ->
+                    TrackPlaybackRoot(
+                        modifier = Modifier.fillMaxSize().padding(paddingValues),
+                        onPreviousScreen = { navController.popBackStack() },
+                    )
                 }
             }
         }
