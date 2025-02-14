@@ -35,12 +35,14 @@ class SearchTrackPageSourceRemote @Inject constructor(
                 return LoadResult.Page(
                     data = data.map { ServerResult.Success(it) },
                     prevKey = getIndexFromUrl(response.data.prev),
-                    nextKey = getIndexFromUrl(response.data.next)
+                    nextKey = getIndexFromUrl(response.data.next),
                 )
             }
             is ServerResult.Error -> {
-                LoadResult.Error(
-                    throwable = NetworkErrorException(response.error)
+                LoadResult.Page(
+                    data = listOf(ServerResult.Error(response.error)),
+                    prevKey = null,
+                    nextKey = null,
                 )
             }
         }

@@ -26,7 +26,17 @@ import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.VerticalPadding
 
 @Composable
-fun TracksNotFound() {
+fun TracksNotFound(
+    isSwipeAvailable: Boolean = true,
+) {
+    val displayText = buildString {
+        append(stringResource(id = R.string.list_tracks_is_empty))
+        append("\n")
+        if (isSwipeAvailable) {
+            append(stringResource(id = R.string.swipe_to_update))
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -47,8 +57,7 @@ fun TracksNotFound() {
             Spacer(modifier = Modifier.height(VerticalPadding))
 
             Text(
-                text = "${stringResource(id = R.string.list_tracks_is_empty)}.\n" +
-                        "${stringResource(id = R.string.swipe_to_update)}.",
+                text = displayText,
                 style = AppTheme.typography.body,
                 color = AppTheme.colors.text,
                 textAlign = TextAlign.Center,

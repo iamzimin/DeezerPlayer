@@ -43,6 +43,7 @@ fun TracksDownloadedScreen(
         Spacer(modifier = Modifier.height(VerticalPadding))
 
         TracksLazyColumn(
+            isSwipeAvailable = false,
             isTracksLoading = state.isTracksLoading,
             tracks = tracksDownloaded,
             onClick = onPlayerScreen,

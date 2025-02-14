@@ -45,8 +45,8 @@ dependencies {
     implementation(libs.mvi.orbit.viewmodel)
     implementation(libs.mvi.orbit.compose)
 
-    // Swipe Refresh
-    //implementation(libs.swiperefresh.compose)
+    //Retrofit
+    implementation(libs.retrofit)
 
     // Coil
     implementation(libs.coil.compose)

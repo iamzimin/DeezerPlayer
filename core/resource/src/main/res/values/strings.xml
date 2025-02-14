@@ -1,19 +1,6 @@
 <resources>
     <string name="app_name">DeezerPlayer</string>
 
-    <!--Shared-->
-    <string name="track_search">Track search</string>
-    <string name="list_tracks_is_empty">List tracks is empty</string>
-    <string name="swipe_to_update">Swipe to update</string>
-
-    <string name="request_timeout">Request Timeout</string>
-    <string name="too_many_requests">Too Many Requests</string>
-    <string name="not_found">Not found error</string>
-    <string name="server_error">Server Error</string>
-    <string name="protocol_error">Protocol error</string>
-    <string name="connect_error">Connect error</string>
-    <string name="unknown_error">Unknown Error</string>
-
 
     <!--Chart-->
     <string name="chart">Chart</string>
@@ -27,5 +14,52 @@
     <string name="track_download">Track download</string>
     <string name="track_success_download">Track was downloaded successfully</string>
     <string name="track_success_remove">Track was removed successfully</string>
+
+
+
+    <!--Shared-->
+    <string name="track_search">Track search</string>
+    <string name="list_tracks_is_empty">List tracks is empty</string>
+    <string name="swipe_to_update">Swipe to update</string>
+
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_request_timeout">Request timeout</string>
+    <string name="error_forbidden">Forbidden</string>
+    <string name="error_too_many_requests">Too many requests</string>
+    <string name="error_not_found">Not found error</string>
+    <string name="error_server">Server error</string>
+    <string name="error_serialization">Serialization error</string>
+    <string name="error_unknown_host">Unknown host error</string>
+    <string name="error_protocol">Protocol error</string>
+    <string name="error_connection">No connection</string>
+
+    <string name="error_invalid_state">Invalid state</string>
+    <string name="error_bad_value">Bad value</string>
+    <string name="error_permission_denied">Permission denied</string>
+    <string name="error_not_supported">Not supported</string>
+    <string name="error_disconnected">Disconnected</string>
+    <string name="error_unspecified">Unspecified error</string>
+    <string name="error_io_unspecified">I/O error</string>
+    <string name="error_network_connection_timeout">Connection timeout</string>
+    <string name="error_invalid_http_content_type">Bad content type</string>
+    <string name="error_bad_http_status">Bad HTTP status</string>
+    <string name="error_file_not_found">File not found</string>
+    <string name="error_no_permission">Access denied</string>
+    <string name="error_cleartext_not_permitted">Cleartext not allowed</string>
+    <string name="error_read_position_out_of_range">Read position out of range</string>
+    <string name="error_parsing_container_malformed">Bad container</string>
+    <string name="error_parsing_manifest_malformed">Bad manifest</string>
+    <string name="error_parsing_container_unsupported">Container unsupported</string>
+    <string name="error_parsing_manifest_unsupported">Manifest unsupported</string>
+    <string name="error_decoder_init_failed">Decoder init failed</string>
+    <string name="error_decoder_query_failed">Decoder query failed</string>
+    <string name="error_decoding_failed">Decoding failed</string>
+    <string name="error_decoding_format_exceeds_capabilities">Format over device cap</string>
+    <string name="error_decoding_format_unsupported">Format unsupported</string>
+    <string name="error_decoding_resources_reclaimed">Resources reclaimed</string>
+    <string name="error_audio_track_init_failed">Audio init failed</string>
+    <string name="error_audio_track_write_failed">Audio write failed</string>
+    <string name="error_audio_track_offload_write_failed">Offload write failed</string>
+    <string name="error_audio_track_offload_init_failed">Offload init failed</string>
 
 </resources>

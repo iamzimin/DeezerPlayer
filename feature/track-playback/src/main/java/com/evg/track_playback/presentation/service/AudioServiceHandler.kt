@@ -1,6 +1,5 @@
 package com.evg.track_playback.presentation.service
 
-
 import android.content.Context
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
@@ -13,6 +12,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.offline.DownloadHelper
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
+import com.evg.track_playback.presentation.mapper.getLocalizedPlayback
 import com.evg.track_playback.presentation.model.AudioState
 import com.evg.track_playback.presentation.model.PlayerEvent
 import kotlinx.coroutines.CoroutineScope
@@ -43,7 +43,7 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
 
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
-                _audioState.value = AudioState.PlayError(cause = error.cause?.localizedMessage ?: "unknown") //TODO
+                _audioState.value = AudioState.PlayError(e = error)
             }
         })
     }

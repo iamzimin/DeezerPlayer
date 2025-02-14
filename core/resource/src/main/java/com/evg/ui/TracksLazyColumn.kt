@@ -15,13 +15,14 @@ import com.evg.ui.theme.LazyColumnSpacedBy
 
 @Composable
 fun TracksLazyColumn(
+    isSwipeAvailable: Boolean = true,
     isTracksLoading: Boolean,
     tracks: List<TrackTileContent>,
     onClick: (id: Long) -> Unit,
 ) {
     if (!isTracksLoading) {
         if (tracks.isEmpty()) {
-            TracksNotFound()
+            TracksNotFound(isSwipeAvailable)
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

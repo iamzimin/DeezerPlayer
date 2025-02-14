@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.LoadState
@@ -19,8 +20,8 @@ import com.evg.ui.TrackTileShimmer
 import com.evg.ui.TracksNotFound
 import com.evg.api.domain.utils.NetworkError
 import com.evg.api.domain.utils.ServerResult
-import com.evg.chart.domain.model.TrackData
 import com.evg.resource.R
+import com.evg.ui.mapper.toErrorMessage
 import com.evg.ui.model.TrackTileContent
 import com.evg.ui.snackbar.SnackBarController
 import com.evg.ui.snackbar.SnackBarEvent
@@ -35,6 +36,8 @@ fun SearchLazyColumn(
     foundedTracks: LazyPagingItems<ServerResult<TrackTileContent, NetworkError>>,
     onClick: (id: Long) -> Unit,
 ) {
+    val context = LocalContext.current
+
     when (foundedTracks.loadState.refresh) {
         is LoadState.Loading -> {
             LazyColumn(
@@ -72,7 +75,10 @@ fun SearchLazyColumn(
                             )
                         }
                         is ServerResult.Error -> {
-                            val trt = item.error
+                            val errorMessage = item.error.toErrorMessage(context)
+                            LaunchedEffect(errorMessage) {
+                                SnackBarController.sendEvent(SnackBarEvent(errorMessage))
+                            }
                         }
                         null -> {}
                     }
@@ -82,7 +88,7 @@ fun SearchLazyColumn(
 
         is LoadState.Error -> {
             TracksNotFound()
-            val errorMessage = stringResource(id = R.string.server_error)
+            val errorMessage = stringResource(id = R.string.error_server)
             LaunchedEffect(errorMessage) {
                 SnackBarController.sendEvent(SnackBarEvent(errorMessage))
             }

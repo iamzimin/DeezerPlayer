@@ -11,9 +11,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.evg.resource.R
+import com.evg.track_playback.presentation.mapper.getLocalizedExceptionMessage
+import com.evg.track_playback.presentation.mapper.getLocalizedPlayback
 import com.evg.track_playback.presentation.mvi.TrackPlaybackSideEffect
 import com.evg.track_playback.presentation.mvi.TrackPlaybackViewModel
 import com.evg.track_playback.presentation.service.AudioService
+import com.evg.ui.mapper.toErrorMessage
 import com.evg.ui.snackbar.SnackBarController
 import com.evg.ui.snackbar.SnackBarEvent
 import org.orbitmvi.orbit.compose.collectAsState
@@ -28,6 +31,7 @@ fun TrackPlaybackRoot(
     val context = LocalContext.current
     val trackDownloadedString = stringResource(R.string.track_success_download)
     val trackRemoveString = stringResource(R.string.track_success_remove)
+    val unknownError = stringResource(R.string.error_unknown)
     var isServiceRunning by rememberSaveable { mutableStateOf(false) }
 
     viewModel.collectSideEffect { sideEffect ->
@@ -40,17 +44,17 @@ fun TrackPlaybackRoot(
                 }
             }
             is TrackPlaybackSideEffect.TrackPlaybackFail -> {
-                SnackBarController.sendEvent(SnackBarEvent(sideEffect.cause))
+                SnackBarController.sendEvent(SnackBarEvent(getLocalizedPlayback(context, sideEffect.e)))
             }
             is TrackPlaybackSideEffect.PlaylistLoadFail -> {
-                SnackBarController.sendEvent(SnackBarEvent(sideEffect.error.name)) //TODO
+                SnackBarController.sendEvent(SnackBarEvent(sideEffect.error.toErrorMessage(context)))
             }
 
             TrackPlaybackSideEffect.TrackDownloadSuccess -> {
                 SnackBarController.sendEvent(SnackBarEvent(trackDownloadedString))
             }
             is TrackPlaybackSideEffect.TrackDownloadFail -> {
-                SnackBarController.sendEvent(SnackBarEvent(sideEffect.cause)) //TODO
+                SnackBarController.sendEvent(SnackBarEvent(getLocalizedExceptionMessage(context, sideEffect.e)))
             }
             is TrackPlaybackSideEffect.TrackRemoveSuccess -> {
                 SnackBarController.sendEvent(SnackBarEvent(trackRemoveString))

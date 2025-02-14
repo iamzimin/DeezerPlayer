@@ -14,7 +14,10 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import retrofit2.HttpException
 import retrofit2.Retrofit
+import java.net.ConnectException
+import java.net.ProtocolException
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 class DeezerApiRepositoryImpl(
     deezerRetrofit: Retrofit,
@@ -28,6 +31,8 @@ class DeezerApiRepositoryImpl(
             ServerResult.Error(NetworkError.SERIALIZATION)
         } catch (e: HttpException) {
             when (e.code()) {
+                403 -> ServerResult.Error(NetworkError.FORBIDDEN)
+                404 -> ServerResult.Error(NetworkError.NOT_FOUND)
                 408 -> ServerResult.Error(NetworkError.REQUEST_TIMEOUT)
                 429 -> ServerResult.Error(NetworkError.TOO_MANY_REQUESTS)
                 in 500..599 -> ServerResult.Error(NetworkError.SERVER_ERROR)
@@ -35,10 +40,17 @@ class DeezerApiRepositoryImpl(
             }
         } catch (e: SocketTimeoutException) {
             ServerResult.Error(NetworkError.REQUEST_TIMEOUT)
+        } catch (e: UnknownHostException) {
+            ServerResult.Error(NetworkError.UNKNOWN_HOST)
+        } catch (e: ProtocolException) {
+            ServerResult.Error(NetworkError.PROTOCOL_EXCEPTION)
+        } catch (e: ConnectException) {
+            ServerResult.Error(NetworkError.CONNECT_EXCEPTION)
         } catch (e: Exception) {
             ServerResult.Error(NetworkError.UNKNOWN)
         }
     }
+
 
     override suspend fun getChart(): ServerResult<ChartResponse, NetworkError> {
         return safeApiCall { deezerApi.getChart() }

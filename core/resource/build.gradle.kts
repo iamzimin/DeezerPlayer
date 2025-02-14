@@ -34,6 +34,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:api"))
+
     // Coil
     implementation(libs.coil.compose)
 

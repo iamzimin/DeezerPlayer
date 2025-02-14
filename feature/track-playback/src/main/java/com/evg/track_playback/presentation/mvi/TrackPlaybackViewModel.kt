@@ -12,6 +12,7 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import com.evg.api.domain.utils.ServerResult
 import com.evg.track_playback.domain.model.TrackData
 import com.evg.track_playback.domain.repository.TrackPlaybackRepository
+import com.evg.track_playback.presentation.mapper.getLocalizedExceptionMessage
 import com.evg.track_playback.presentation.model.AudioState
 import com.evg.track_playback.presentation.model.PlayerEvent
 import com.evg.track_playback.presentation.model.PlaylistState
@@ -65,7 +66,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                     }
                     is AudioState.PlayError -> {
                         reduce { state.copy(playlistState = PlaylistState.Error) }
-                        postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(cause = mediaState.cause))
+                        postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(e = mediaState.e))
                     }
                     is AudioState.CurrentPlaying -> {
                         reduce { state.copy(
@@ -256,10 +257,9 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         reduce { state.copy(isTrackUpdating = false) }
     }
 
-    private fun trackDownloadFail(finalException: Exception?) = intent {
-        val cause = finalException?.cause?.localizedMessage ?: "unknown" //TODO
+    private fun trackDownloadFail(exception: Exception?) = intent {
         reduce { state.copy(isTrackUpdating = false) }
-        postSideEffect(TrackPlaybackSideEffect.TrackDownloadFail(cause = cause))
+        postSideEffect(TrackPlaybackSideEffect.TrackDownloadFail(e = exception))
     }
 
     private fun calculateProgressValue(currentProgress: Long) = intent {
