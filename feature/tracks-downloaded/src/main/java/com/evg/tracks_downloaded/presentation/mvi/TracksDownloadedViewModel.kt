@@ -18,25 +18,26 @@ class TracksDownloadedViewModel @Inject constructor(
     private var cachedTracks: List<TrackTileContent> = emptyList()
 
     init {
-        getTracksDownloaded()
+        subscribeToDatabaseChanges()
     }
 
-    fun dispatch(action: TracksDownloadedAction) {
-        when (action) {
-            TracksDownloadedAction.GetTracksDownloaded -> getTracksDownloaded()
-            is TracksDownloadedAction.SearchTracksDownloaded -> searchTracksDownloaded(query = action.query)
-            is TracksDownloadedAction.FilterTracksOnScreen -> searchTrack(query = action.query)
+    private fun subscribeToDatabaseChanges() = intent {
+        tracksDownloadedRepository.getTracksDownloadedFlow().collect { tracks ->
+            reduce { state.copy(isTracksLoading = true) }
+            val trackTileContents = tracks.map { it.toTrackTileContent() }
+            cachedTracks = trackTileContents
+            reduce { state.copy(
+                isTracksLoading = false,
+                tracksDownloaded = trackTileContents
+            ) }
         }
     }
 
-    private fun getTracksDownloaded() = intent {
-        reduce { state.copy(isTracksLoading = true) }
-        val response = tracksDownloadedRepository.getTracksDownloaded().map { it.toTrackTileContent() }
-        cachedTracks = response
-        reduce { state.copy(
-            isTracksLoading = false,
-            tracksDownloaded = response,
-        ) }
+
+    fun dispatch(action: TracksDownloadedAction) {
+        when (action) {
+            is TracksDownloadedAction.FilterTracksOnScreen -> searchTrack(query = action.query)
+        }
     }
 
     private fun searchTrack(query: String) = intent {
@@ -49,19 +50,5 @@ class TracksDownloadedViewModel @Inject constructor(
             }
         }
         reduce { state.copy(tracksDownloaded = filteredTracks) }
-    }
-
-    private fun searchTracksDownloaded(query: String) = intent {
-        reduce { state.copy(isTracksLoading = true) }
-        val response = tracksDownloadedRepository.getTracksDownloaded().map { it.toTrackTileContent() }
-        cachedTracks = response
-        val filteredTracks = response.filter {
-            it.trackTitle.contains(query, ignoreCase = true) ||
-            it.artistName.contains(query, ignoreCase = true)
-        }
-        reduce { state.copy(
-            isTracksLoading = false,
-            tracksDownloaded = filteredTracks,
-        ) }
     }
 }

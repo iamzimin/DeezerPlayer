@@ -5,11 +5,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.evg.database.domain.models.TracksDBO
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TracksDao {
     @Query("SELECT * FROM TracksDBO")
     suspend fun getAllTracks(): List<TracksDBO>
+
+    @Query("SELECT * FROM TracksDBO")
+    fun getAllTracksFlow(): Flow<List<TracksDBO>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrack(track: TracksDBO)
