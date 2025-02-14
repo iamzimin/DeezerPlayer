@@ -146,9 +146,9 @@ fun SongScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) { page ->
                 if (page == pagerState.currentPage) {
-                    VinylAlbumCoverAnimation(isSongPlaying = isPlaying, albumCover = currentTrack.albumCover)
+                    VinylAlbumCoverAnimation(isSongPlaying = isPlaying, albumCover = state.trackLists[page].albumCover)
                 } else {
-                    VinylAlbumCoverAnimation(isSongPlaying = false, albumCover = currentTrack.albumCover)
+                    VinylAlbumCoverAnimation(isSongPlaying = false, albumCover = state.trackLists[page].albumCover)
                 }
             }
             Spacer(modifier = Modifier.height(50.dp))
