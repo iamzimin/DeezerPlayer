@@ -10,5 +10,6 @@ data class TracksDBO(
     val trackPreview: String,
     val artistName: String,
     val albumID: Long,
+    val albumTitle: String,
     val albumCover: String,
 )

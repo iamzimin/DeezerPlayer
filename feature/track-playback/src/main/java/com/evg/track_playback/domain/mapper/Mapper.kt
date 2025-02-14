@@ -12,6 +12,7 @@ fun TrackResponse.toTrackData(isDownloaded: Boolean): TrackData {
         artistName = this.artist.name,
         albumID = this.album.id,
         albumCover = this.album.cover,
+        albumTitle = this.album.title,
         isDownloaded = isDownloaded,
     )
 }
@@ -23,6 +24,7 @@ fun TracksDBO.toTrackData(): TrackData {
         trackPreview = this.trackPreview,
         artistName = this.artistName,
         albumID = this.albumID,
+        albumTitle = this.albumTitle,
         albumCover = this.albumCover,
         isDownloaded = true,
     )
@@ -35,6 +37,7 @@ fun TrackData.toTracksDBO(): TracksDBO {
         trackPreview = this.trackPreview,
         artistName = this.artistName,
         albumID = this.albumID,
+        albumTitle = this.albumTitle,
         albumCover = this.albumCover,
     )
 }

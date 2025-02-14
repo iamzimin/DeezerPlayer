@@ -37,8 +37,8 @@ object TrackDownloadModule {
         @ApplicationContext context: Context
     ): Notification {
         return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Downloading audio")
-            .setSmallIcon(R.drawable.sad)
+            .setContentTitle(context.getString(R.string.downloading_audio))
+            .setSmallIcon(R.drawable.music)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
     }

@@ -107,7 +107,6 @@ fun SongScreen(
             AnimatedContent(
                 targetState = playingSongIndex,
                 transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
-                label = "",
             ) { animatedIndex ->
                 val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
                 Text(
@@ -122,11 +121,23 @@ fun SongScreen(
             AnimatedContent(
                 targetState = playingSongIndex,
                 transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
-                label = "",
             ) { animatedIndex ->
                 val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
                 Text(
-                    text = state.trackLists[index].trackTitle,
+                    text = state.trackLists[index].albumTitle,
+                    color = AppTheme.colors.text,
+                    style = AppTheme.typography.body,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            AnimatedContent(
+                targetState = playingSongIndex,
+                transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
+            ) { animatedIndex ->
+                val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
+                Text(
+                    text = state.trackLists[index].artistName,
                     color = AppTheme.colors.text,
                     style = AppTheme.typography.body,
                     maxLines = 1,
@@ -278,6 +289,7 @@ fun SongScreenPreview(darkTheme: Boolean = true) {
                             trackPreview = "https://cdnt-preview.dzcdn.net/api/1/1/b/4/7/0/b4764070eb914f3885a3bd9bdd497934.mp3",
                             artistName = "Teddy Swims",
                             albumID = 2,
+                            albumTitle = "Album Title",
                             albumCover = "https://cdn-images.dzcdn.net/images/cover/ebb148dd7d9d124ea9fbe39d4576fa46/250x250-000000-80-0-0.jpg",
                             isDownloaded = true,
                         )

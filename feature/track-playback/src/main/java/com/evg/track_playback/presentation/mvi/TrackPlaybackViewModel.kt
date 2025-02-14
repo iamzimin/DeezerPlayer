@@ -1,5 +1,6 @@
 package com.evg.track_playback.presentation.mvi
 
+import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -163,8 +164,10 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                 .setMediaId(audio.trackID.toString())
                 .setMediaMetadata(
                     MediaMetadata.Builder()
-                        .setAlbumArtist(audio.artistName)
+                        .setArtist(audio.artistName)
                         .setDisplayTitle(audio.trackTitle)
+                        .setAlbumTitle(audio.albumTitle)
+                        .setArtworkUri(Uri.parse(audio.albumCover))
                         .build()
                 )
                 .build()

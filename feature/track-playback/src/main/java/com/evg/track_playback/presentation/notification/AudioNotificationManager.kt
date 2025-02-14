@@ -4,8 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media3.common.util.UnstableApi
@@ -23,8 +22,8 @@ class AudioNotificationManager @Inject constructor(
 ) {
     companion object {
         private const val NOTIFICATION_ID = 101
-        private const val NOTIFICATION_CHANNEL_NAME = "playback"
         private const val NOTIFICATION_CHANNEL_ID = "playback"
+        @StringRes private val NOTIFICATION_CHANNEL_NAME = R.string.playback
     }
 
     private val notificationManager: NotificationManagerCompat =
@@ -63,13 +62,14 @@ class AudioNotificationManager @Inject constructor(
                     pendingIntent = mediaSession.sessionActivity
                 )
             )
-            .setSmallIconResourceId(R.drawable.sad)
+            .setSmallIconResourceId(R.drawable.music)
             .build()
             .also {
                 it.setMediaSessionToken(mediaSession.platformToken)
                 it.setUseFastForwardActionInCompactView(true)
                 it.setUseRewindActionInCompactView(true)
                 it.setUseNextActionInCompactView(true)
+                it.setUseChronometer(true)
                 it.setPriority(NotificationCompat.PRIORITY_LOW)
                 it.setPlayer(exoPlayer)
             }
@@ -78,7 +78,7 @@ class AudioNotificationManager @Inject constructor(
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
-            NOTIFICATION_CHANNEL_NAME,
+            context.getString(NOTIFICATION_CHANNEL_NAME),
             NotificationManager.IMPORTANCE_LOW
         )
         notificationManager.createNotificationChannel(channel)
