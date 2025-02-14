@@ -264,7 +264,12 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
 
     private fun calculateProgressValue(currentProgress: Long) = intent {
         reduce {
-            val progress = if (currentProgress > 0) ((currentProgress.toFloat() / state.duration.toFloat()) * 100f) else 0f
+            val progress = if (state.duration > 0 && currentProgress > 0) {
+                (currentProgress.toFloat() / state.duration.toFloat()) * 100f
+            } else {
+                0f
+            }
+
             state.copy(progress = progress)
         }
     }

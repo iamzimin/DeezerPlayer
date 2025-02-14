@@ -38,20 +38,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.evg.resource.R
 import com.evg.track_playback.domain.model.TrackData
+import com.evg.track_playback.presentation.mapper.toFormattedTime
+import com.evg.track_playback.presentation.mapper.toFormattedTimeWithProgress
 import com.evg.track_playback.presentation.model.PlaylistState
 import com.evg.track_playback.presentation.mvi.TrackPlaybackAction
-import com.evg.track_playback.presentation.mvi.TrackPlaybackState
 import com.evg.ui.extensions.clickableRipple
 import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
@@ -176,7 +173,7 @@ fun SongScreen(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
-                        text = progress.toString(),
+                        text = duration.toFormattedTimeWithProgress(progress = progress),
                         modifier = Modifier
                             .weight(1f)
                             .padding(10.dp),
@@ -184,9 +181,8 @@ fun SongScreen(
                         style = AppTheme.typography.small,
                     )
 
-                    val remainTime = duration - seekbarPosition
                     Text(
-                        text = remainTime.toString(),
+                        text = duration.toFormattedTime(),
                         modifier = Modifier
                             .padding(10.dp),
                         color = AppTheme.colors.text,
