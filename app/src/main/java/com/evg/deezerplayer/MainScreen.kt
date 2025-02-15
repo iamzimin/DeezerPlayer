@@ -34,6 +34,7 @@ import com.evg.chart.presentation.ChartRoot
 import com.evg.deezerplayer.navigation.BottomBar
 import com.evg.deezerplayer.navigation.DeezerPlayerScaffold
 import com.evg.deezerplayer.navigation.Route
+import com.evg.deezerplayer.navigation.TopBar
 import com.evg.deezerplayer.navigation.bottomNavPadding
 import com.evg.deezerplayer.snackbar.ObserveAsEvent
 import com.evg.deezerplayer.snackbar.SwipeableSnackBarHost
@@ -100,6 +101,7 @@ fun MainScreen() {
 
     Scaffold(
         modifier = Modifier.fillMaxSize().imePadding(),
+        topBar = { TopBar(navController) },
         bottomBar = { BottomBar(navController) },
         containerColor = if (debouncedImageUrl == null) AppTheme.colors.background else Color.Transparent,
         snackbarHost = { SwipeableSnackBarHost(hostState = snackBarHostState) }

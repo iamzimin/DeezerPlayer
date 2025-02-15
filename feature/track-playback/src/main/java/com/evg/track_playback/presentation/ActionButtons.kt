@@ -34,8 +34,7 @@ fun ActionButtons(
     val innerMargin = 30.dp
 
     ConstraintLayout(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
     ) {
         val (btnPrev, btnPause, btnNext, btnSave) = createRefs()
 

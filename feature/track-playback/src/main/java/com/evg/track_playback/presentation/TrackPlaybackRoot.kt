@@ -1,8 +1,12 @@
 package com.evg.track_playback.presentation
 
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -41,6 +45,16 @@ fun TrackPlaybackRoot(
     val updateString = stringResource(id = R.string.update)
     val trackRemoveString = stringResource(R.string.track_success_remove)
     var isServiceRunning by rememberSaveable { mutableStateOf(false) }
+
+    val activity = (LocalActivity.current as Activity)
+
+    DisposableEffect(Unit) {
+        val originalOrientation = activity.requestedOrientation
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onDispose {
+            activity.requestedOrientation = originalOrientation
+        }
+    }
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
