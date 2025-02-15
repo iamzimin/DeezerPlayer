@@ -17,7 +17,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.evg.ui.TrackTile
 import com.evg.ui.TrackTileShimmer
-import com.evg.ui.TracksNotFound
+import com.evg.ui.NotFound
 import com.evg.api.domain.utils.NetworkError
 import com.evg.api.domain.utils.ServerResult
 import com.evg.resource.R
@@ -55,7 +55,13 @@ fun SearchLazyColumn(
 
         is LoadState.NotLoading -> {
             if (foundedTracks.itemCount <= 1 && !isChartLoading) {
-                TracksNotFound()
+                NotFound(
+                    displayText = buildString {
+                        append(stringResource(id = R.string.list_tracks_is_empty))
+                        append("\n")
+                        append(stringResource(id = R.string.swipe_to_update))
+                    }
+                )
             }
 
             LazyColumn(
@@ -96,7 +102,13 @@ fun SearchLazyColumn(
         }
 
         is LoadState.Error -> {
-            TracksNotFound()
+            NotFound(
+                displayText = buildString {
+                    append(stringResource(id = R.string.list_tracks_is_empty))
+                    append("\n")
+                    append(stringResource(id = R.string.swipe_to_update))
+                }
+            )
             val errorMessage = stringResource(id = R.string.error_server)
             LaunchedEffect(errorMessage) {
                 SnackBarController.sendEvent(SnackBarEvent(

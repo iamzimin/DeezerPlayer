@@ -86,104 +86,101 @@ fun SongScreen(
         dispatch(TrackPlaybackAction.PlayByIndex(pagerState.currentPage))
     }
 
-    Box(
+
+    Column(
         modifier = Modifier
             .fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            AnimatedContent(
-                targetState = playingSongIndex,
-                transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
-            ) { animatedIndex ->
-                val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
-                Text(
-                    modifier = Modifier.padding(horizontal = HorizontalPadding),
-                    text = state.trackLists[index].albumTitle,
-                    color = Color.White,
-                    style = AppTheme.typography.body,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-
-            Spacer(Modifier.height(20.dp))
-
-            val pageWidth = (configuration.smallestScreenWidthDp / 1.4).dp
-            val horizontalPadding = ((configuration.smallestScreenWidthDp.dp - pageWidth) / 2)
-            HorizontalPager(
-                modifier = Modifier.fillMaxWidth(),
-                state = pagerState,
-                contentPadding = PaddingValues(horizontal = horizontalPadding),
-                pageSize = PageSize.Fixed(pageWidth),
-                verticalAlignment = Alignment.CenterVertically,
-            ) { page ->
-                val isCurrentPage = page == pagerState.currentPage
-                AlbumCoverAnimation(
-                    modifier = Modifier
-                        .size(pageWidth)
-                        .padding(horizontal = 20.dp),
-                    isSongPlaying = isCurrentPage && isPlaying,
-                    albumCover = state.trackLists[page].albumCover
-                )
-            }
-
-            Spacer(Modifier.height(40.dp))
-
-
-            AnimatedContent(
-                targetState = playingSongIndex,
-                transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
-            ) { animatedIndex ->
-                val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
-                Text(
-                    modifier = Modifier.padding(horizontal = HorizontalPadding),
-                    text = state.trackLists[index].trackTitle,
-                    color = Color.White,
-                    style = AppTheme.typography.heading,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            Spacer(Modifier.height(5.dp))
-            AnimatedContent(
-                targetState = playingSongIndex,
-                transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
-            ) { animatedIndex ->
-                val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
-                Text(
-                    modifier = Modifier.padding(horizontal = HorizontalPadding),
-                    text = state.trackLists[index].artistName,
-                    color = Color.White,
-                    style = AppTheme.typography.body,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-            Spacer(Modifier.height(30.dp))
-
-
-            Slider(
-                progress = progress,
-                duration = duration,
-                seekTo = { dispatch(TrackPlaybackAction.SeekTo(it)) }
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            ActionButtons(
-                modifier = Modifier.fillMaxWidth(),
-                isPlaying = isPlaying,
-                isDownloaded = currentTrack.isDownloaded,
-                isTrackDownloading = isTrackDownloading,
-                dispatch = dispatch,
+        AnimatedContent(
+            targetState = playingSongIndex,
+            transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
+        ) { animatedIndex ->
+            val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
+            Text(
+                modifier = Modifier.padding(horizontal = HorizontalPadding),
+                text = state.trackLists[index].albumTitle,
+                color = Color.White,
+                style = AppTheme.typography.body,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
+
+
+        Spacer(Modifier.height(20.dp))
+
+        val pageWidth = (configuration.smallestScreenWidthDp / 1.4).dp
+        val horizontalPadding = ((configuration.smallestScreenWidthDp.dp - pageWidth) / 2)
+        HorizontalPager(
+            modifier = Modifier.fillMaxWidth(),
+            state = pagerState,
+            contentPadding = PaddingValues(horizontal = horizontalPadding),
+            pageSize = PageSize.Fixed(pageWidth),
+            verticalAlignment = Alignment.CenterVertically,
+        ) { page ->
+            val isCurrentPage = page == pagerState.currentPage
+            AlbumCoverAnimation(
+                modifier = Modifier
+                    .size(pageWidth)
+                    .padding(horizontal = 20.dp),
+                isSongPlaying = isCurrentPage && isPlaying,
+                albumCover = state.trackLists[page].albumCover
+            )
+        }
+
+        Spacer(Modifier.height(40.dp))
+
+
+        AnimatedContent(
+            targetState = playingSongIndex,
+            transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
+        ) { animatedIndex ->
+            val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
+            Text(
+                modifier = Modifier.padding(horizontal = HorizontalPadding),
+                text = state.trackLists[index].trackTitle,
+                color = Color.White,
+                style = AppTheme.typography.heading,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Spacer(Modifier.height(5.dp))
+        AnimatedContent(
+            targetState = playingSongIndex,
+            transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
+        ) { animatedIndex ->
+            val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
+            Text(
+                modifier = Modifier.padding(horizontal = HorizontalPadding),
+                text = state.trackLists[index].artistName,
+                color = Color.White,
+                style = AppTheme.typography.body,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+
+        Spacer(Modifier.height(30.dp))
+
+
+        Slider(
+            progress = progress,
+            duration = duration,
+            seekTo = { dispatch(TrackPlaybackAction.SeekTo(it)) }
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        ActionButtons(
+            modifier = Modifier.fillMaxWidth(),
+            isPlaying = isPlaying,
+            isDownloaded = currentTrack.isDownloaded,
+            isTrackDownloading = isTrackDownloading,
+            dispatch = dispatch,
+        )
     }
 }
 

@@ -54,6 +54,9 @@ dependencies {
     // Constraint Layout
     implementation(libs.androidx.ui.constraintlayout)
 
+    // Swipe Refresh
+    implementation(libs.swiperefresh.compose)
+
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)

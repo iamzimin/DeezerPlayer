@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,17 +25,9 @@ import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.VerticalPadding
 
 @Composable
-fun TracksNotFound(
-    isSwipeAvailable: Boolean = true,
+fun NotFound(
+    displayText: String,
 ) {
-    val displayText = buildString {
-        append(stringResource(id = R.string.list_tracks_is_empty))
-        append("\n")
-        if (isSwipeAvailable) {
-            append(stringResource(id = R.string.swipe_to_update))
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -71,7 +62,9 @@ fun TracksNotFound(
 fun TracksNotFoundPreview(darkTheme: Boolean = true) {
     DeezerPlayerTheme(darkTheme = darkTheme) {
         Surface(color = AppTheme.colors.background) {
-            TracksNotFound()
+            NotFound(
+                displayText = "Text"
+            )
         }
     }
 }

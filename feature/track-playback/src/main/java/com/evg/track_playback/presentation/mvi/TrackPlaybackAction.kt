@@ -1,6 +1,8 @@
 package com.evg.track_playback.presentation.mvi
 
 sealed class TrackPlaybackAction {
+    data object LoadPlaylist: TrackPlaybackAction()
+
     data object SaveTrack: TrackPlaybackAction()
     data object RemoveTrack: TrackPlaybackAction()
 

@@ -22,6 +22,7 @@
 
     <!--Shared-->
     <string name="track_search">Track search</string>
+    <string name="track_loading_error">Track loading error</string>
     <string name="list_tracks_is_empty">List tracks is empty</string>
     <string name="swipe_to_update">Swipe to update</string>
     <string name="update">Update</string>

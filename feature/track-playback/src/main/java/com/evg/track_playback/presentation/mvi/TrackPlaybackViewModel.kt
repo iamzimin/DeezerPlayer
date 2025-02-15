@@ -44,11 +44,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         initAudioStateCollecting()
         initDownloadManager(downloadManager)
 
-        if (isOnlineMode) {
-            getAlbumListRemote(trackId)
-        } else {
-            getTracksLocal(trackId)
-        }
+        initPlaylist()
     }
 
     private fun initAudioStateCollecting() {
@@ -64,7 +60,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                         audioServiceHandler.onPlayerEvents(PlayerEvent.Play)
                     }
                     is AudioState.PlayError -> {
-                        reduce { state.copy(playlistState = PlaylistState.Error) }
                         postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(e = mediaState.e))
                     }
                     is AudioState.CurrentPlaying -> {
@@ -98,9 +93,18 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         })
     }
 
+    private fun initPlaylist() {
+        if (isOnlineMode) {
+            getAlbumListRemote(trackId)
+        } else {
+            getTracksLocal(trackId)
+        }
+    }
+
 
     fun dispatch(action: TrackPlaybackAction) = viewModelScope.launch {
         when (action) {
+            TrackPlaybackAction.LoadPlaylist -> initPlaylist()
             TrackPlaybackAction.SaveTrack -> {
                 intent { reduce { state.copy(isTrackUpdating = true) } }
                 audioServiceHandler.onPlayerEvents(PlayerEvent.DownloadCurrentTrack)

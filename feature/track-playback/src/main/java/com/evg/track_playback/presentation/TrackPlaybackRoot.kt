@@ -14,10 +14,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.evg.resource.R
 import com.evg.track_playback.presentation.mapper.getLocalizedExceptionMessage
 import com.evg.track_playback.presentation.mapper.getLocalizedPlayback
+import com.evg.track_playback.presentation.mvi.TrackPlaybackAction
 import com.evg.track_playback.presentation.mvi.TrackPlaybackSideEffect
 import com.evg.track_playback.presentation.mvi.TrackPlaybackViewModel
 import com.evg.track_playback.presentation.service.AudioService
 import com.evg.ui.mapper.toErrorMessage
+import com.evg.ui.snackbar.SnackBarAction
 import com.evg.ui.snackbar.SnackBarController
 import com.evg.ui.snackbar.SnackBarEvent
 import org.orbitmvi.orbit.compose.collectAsState
@@ -36,6 +38,7 @@ fun TrackPlaybackRoot(
 
     val context = LocalContext.current
     val trackDownloadedString = stringResource(R.string.track_success_download)
+    val updateString = stringResource(id = R.string.update)
     val trackRemoveString = stringResource(R.string.track_success_remove)
     var isServiceRunning by rememberSaveable { mutableStateOf(false) }
 
@@ -52,7 +55,13 @@ fun TrackPlaybackRoot(
                 SnackBarController.sendEvent(SnackBarEvent(getLocalizedPlayback(context, sideEffect.e)))
             }
             is TrackPlaybackSideEffect.PlaylistLoadFail -> {
-                SnackBarController.sendEvent(SnackBarEvent(sideEffect.error.toErrorMessage(context)))
+                SnackBarController.sendEvent(SnackBarEvent(
+                    message = sideEffect.error.toErrorMessage(context),
+                    action = SnackBarAction(
+                        name = updateString,
+                        action = { viewModel.dispatch(TrackPlaybackAction.LoadPlaylist) },
+                    ),
+                ))
             }
 
             TrackPlaybackSideEffect.TrackDownloadSuccess -> {

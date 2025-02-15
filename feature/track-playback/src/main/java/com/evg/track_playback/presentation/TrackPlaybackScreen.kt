@@ -6,20 +6,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.evg.resource.R
 import com.evg.track_playback.presentation.model.PlaylistState
 import com.evg.track_playback.presentation.mvi.TrackPlaybackAction
 import com.evg.track_playback.presentation.mvi.TrackPlaybackState
+import com.evg.ui.NotFound
 import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
-import com.evg.ui.theme.HorizontalPadding
 import com.evg.ui.theme.VerticalPadding
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun TrackPlaybackScreen(
@@ -30,6 +33,7 @@ fun TrackPlaybackScreen(
     onBackgroundImageReady: (url: String) -> Unit,
 ) {
     val uiState = state.playlistState
+    val refreshingState = rememberSwipeRefreshState(isRefreshing = false)
 
     Column(
         modifier = modifier
@@ -37,30 +41,46 @@ fun TrackPlaybackScreen(
                 vertical = VerticalPadding,
             )
     ) {
-
-        when (uiState) {
-            PlaylistState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = AppTheme.colors.primary)
-                }
-            }
-            PlaylistState.Error -> {
-                Box(Modifier.fillMaxSize().background(Color.Red))
-            }
-            is PlaylistState.Ready -> {
-                SongScreen(
-                    dispatch = dispatch,
-                    state = uiState,
-                    isPlaying = state.isPlaying,
-                    progress = state.progress,
-                    duration = state.duration,
-                    isTrackDownloading = state.isTrackUpdating,
-                    onPreviousScreen = onPreviousScreen,
-                    onBackgroundImageReady = onBackgroundImageReady,
+        SwipeRefresh(
+            modifier = Modifier
+                .fillMaxSize(),
+            state = refreshingState,
+            swipeEnabled = uiState is PlaylistState.Error,
+            onRefresh = { dispatch(TrackPlaybackAction.LoadPlaylist) },
+            indicator = { state, trigger ->
+                SwipeRefreshIndicator(
+                    state = state,
+                    refreshTriggerDistance = trigger,
+                    backgroundColor = AppTheme.colors.background,
+                    contentColor = AppTheme.colors.primary,
                 )
+            },
+        ) {
+            when (uiState) {
+                PlaylistState.Loading -> {
+                    SongScreenShimmer()
+                }
+                PlaylistState.Error -> {
+                    NotFound(
+                        displayText = buildString {
+                            append(stringResource(id = R.string.track_loading_error))
+                            append("\n")
+                            append(stringResource(id = R.string.swipe_to_update))
+                        }
+                    )
+                }
+                is PlaylistState.Ready -> {
+                    SongScreen(
+                        dispatch = dispatch,
+                        state = uiState,
+                        isPlaying = state.isPlaying,
+                        progress = state.progress,
+                        duration = state.duration,
+                        isTrackDownloading = state.isTrackUpdating,
+                        onPreviousScreen = onPreviousScreen,
+                        onBackgroundImageReady = onBackgroundImageReady,
+                    )
+                }
             }
         }
     }

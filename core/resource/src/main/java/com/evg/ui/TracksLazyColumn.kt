@@ -7,7 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.evg.resource.R
 import com.evg.ui.model.TrackTileContent
 import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
@@ -22,7 +24,15 @@ fun TracksLazyColumn(
 ) {
     if (!isTracksLoading) {
         if (tracks.isEmpty()) {
-            TracksNotFound(isSwipeAvailable)
+            NotFound(
+                displayText = buildString {
+                    append(stringResource(id = R.string.list_tracks_is_empty))
+                    append("\n")
+                    if (isSwipeAvailable) {
+                        append(stringResource(id = R.string.swipe_to_update))
+                    }
+                }
+            )
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

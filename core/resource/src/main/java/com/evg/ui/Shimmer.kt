@@ -10,9 +10,10 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 fun Shimmer(
     modifier: Modifier,
+    modifierTop: Modifier = Modifier,
 ) {
     Box(
-        modifier = Modifier.shimmer(),
+        modifier = modifierTop.shimmer(),
     ) {
         Box(
             modifier = modifier
