@@ -15,6 +15,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +35,15 @@ fun SearchTextField(
     modifier: Modifier = Modifier,
     onTextChangeDebounced: (text: String) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardState by keyboardAsState()
     var typedText by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+
+    LaunchedEffect(keyboardState) {
+        if (keyboardState == Keyboard.Closed) {
+            focusManager.clearFocus()
+        }
+    }
 
     LaunchedEffect(Unit) {
         snapshotFlow { typedText.text }
