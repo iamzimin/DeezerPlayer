@@ -65,7 +65,7 @@ fun SongScreen(
     onPreviousScreen: () -> Unit,
 ) {
     val currentPlayId = state.currentPlayingIndex?.coerceAtMost(state.trackLists.lastIndex)
-    if (currentPlayId == null) {
+    if (currentPlayId == null || state.trackLists.isEmpty()) {
         onPreviousScreen()
         return
     }

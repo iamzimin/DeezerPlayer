@@ -9,7 +9,6 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
@@ -18,7 +17,7 @@ import com.evg.database.domain.repository.DatabaseRepository
 import com.evg.track_playback.data.repository.TrackPlaybackRepositoryImpl
 import com.evg.track_playback.domain.repository.TrackPlaybackRepository
 import com.evg.track_playback.presentation.notification.AudioNotificationManager
-import com.evg.track_playback.presentation.service.AudioServiceHandler
+import com.evg.track_playback.presentation.handler.AudioServiceHandler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -13,16 +13,14 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import com.evg.api.domain.utils.ServerResult
 import com.evg.track_playback.domain.model.TrackData
 import com.evg.track_playback.domain.repository.TrackPlaybackRepository
-import com.evg.track_playback.presentation.mapper.getLocalizedExceptionMessage
+import com.evg.track_playback.presentation.handler.PlaylistHandler
 import com.evg.track_playback.presentation.model.AudioState
 import com.evg.track_playback.presentation.model.PlayerEvent
 import com.evg.track_playback.presentation.model.PlaylistState
-import com.evg.track_playback.presentation.service.AudioServiceHandler
+import com.evg.track_playback.presentation.handler.AudioServiceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.Syntax
 import org.orbitmvi.orbit.viewmodel.container
@@ -40,7 +38,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     private val trackId = savedStateHandle.get<Long>("id") ?: error("trackId is required")
     private val isOnlineMode = savedStateHandle.get<Boolean>("isOnlineMode") ?: error("isOnlineMode is required")
 
-    private var trackList: List<TrackData> = emptyList()
+    private val playlistHandler = PlaylistHandler()
 
     init {
         initAudioStateCollecting()
@@ -72,7 +70,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                     is AudioState.CurrentPlaying -> {
                         reduce { state.copy(
                             playlistState = PlaylistState.Ready(
-                                trackLists = trackList,
+                                trackLists = playlistHandler.getPlaylist(),
                                 currentPlayingIndex = mediaState.mediaItemIndex,
                             ),
                         )}
@@ -99,7 +97,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
             override fun onDownloadRemoved(downloadManager: DownloadManager, download: Download) {}
         })
     }
-
 
 
     fun dispatch(action: TrackPlaybackAction) = viewModelScope.launch {
@@ -129,12 +126,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
 
 
 
-    private fun loadTracks(tracks: List<TrackData>, trackId: Long) = intent {
-        trackList = tracks
-        val startIndex = tracks.indexOfFirst { it.trackID == trackId }.let { if (it < 0) 0 else it }
-        setMediaItems(tracks, startIndex)
-    }
-
     private fun getAlbumListRemote(trackId: Long) = intent {
         reduce { state.copy(playlistState = PlaylistState.Loading) }
         when (val response = trackPlaybackRepository.getAlbumByTrackId(id = trackId)) {
@@ -152,6 +143,12 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         reduce { state.copy(playlistState = PlaylistState.Loading) }
         val response = trackPlaybackRepository.getTracksFromDatabase()
         loadTracks(response, trackId)
+    }
+
+    private fun loadTracks(tracks: List<TrackData>, trackId: Long) = intent {
+        playlistHandler.setPlaylist(tracks)
+        val startIndex = tracks.indexOfFirst { it.trackID == trackId }.let { if (it < 0) 0 else it }
+        setMediaItems(tracks, startIndex)
     }
 
     private fun setMediaItems(trackLists: List<TrackData>, startIndex: Int) {
@@ -180,6 +177,26 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     }
 
 
+    @OptIn(UnstableApi::class)
+    private fun saveTrackToDB(download: Download) = intent {
+        playlistHandler.findTrackById(download.request.id)?.let { track ->
+            updateDownloadStatus(track, false)
+        }
+        reduce { state.copy(isTrackUpdating = false) }
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun removeTrackFromDB(download: Download) = intent {
+        playlistHandler.findTrackById(download.request.id)?.let { track ->
+            updateDownloadStatus(track, true)
+        }
+        reduce { state.copy(isTrackUpdating = false) }
+    }
+
+    private fun trackDownloadFail(exception: Exception?) = intent {
+        reduce { state.copy(isTrackUpdating = false) }
+        postSideEffect(TrackPlaybackSideEffect.TrackDownloadFail(e = exception))
+    }
 
     private fun updateDownloadStatus(
         track: TrackData,
@@ -191,19 +208,18 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         updateTrackInDatabase(track, isDownloaded)
 
         if (!isOnlineMode && isDownloaded) {
-            val (updatedList, newCurrentIndex) = removeTrackAndComputeIndex(track)
-            trackList = updatedList
+            val (updatedList, newCurrentIndex) = playlistHandler.removeTrackAndComputeIndex(track)
             reduce { state.copy(
                 playlistState = PlaylistState.Ready(
-                    trackLists = trackList,
+                    trackLists = updatedList,
                     currentPlayingIndex = newCurrentIndex,
                 )
             )}
         } else {
-            trackList = toggleTrackDownloadStatus(track, isDownloaded)
+            playlistHandler.toggleTrackDownloadStatus(track, isDownloaded)
             reduce { state.copy(
                 playlistState = PlaylistState.Ready(
-                    trackLists = trackList,
+                    trackLists = playlistHandler.getPlaylist(),
                     currentPlayingIndex = uiState.currentPlayingIndex,
                 )
             )}
@@ -223,48 +239,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
-    private fun removeTrackAndComputeIndex(track: TrackData): Pair<List<TrackData>, Int?> {
-        val removedIndex = trackList.indexOfFirst { it.trackID == track.trackID }
-        val updatedList = trackList.filterNot { it.trackID == track.trackID }
-        val newCurrentIndex = when {
-            updatedList.isEmpty() -> null
-            removedIndex == trackList.lastIndex -> updatedList.lastIndex
-            else -> removedIndex
-        }
-        return updatedList to newCurrentIndex
-    }
-
-    private fun toggleTrackDownloadStatus(track: TrackData, isDownloaded: Boolean): List<TrackData> {
-        return trackList.map { currentTrack ->
-            if (currentTrack.trackID == track.trackID)
-                currentTrack.copy(isDownloaded = !isDownloaded)
-            else
-                currentTrack
-        }
-    }
-
-
-    @OptIn(UnstableApi::class)
-    private fun saveTrackToDB(download: Download) = intent {
-        getTrackFromPlaylistById(download.request.id)?.let { track ->
-            updateDownloadStatus(track, false)
-        }
-        reduce { state.copy(isTrackUpdating = false) }
-    }
-
-    @OptIn(UnstableApi::class)
-    private fun removeTrackFromDB(download: Download) = intent {
-        getTrackFromPlaylistById(download.request.id)?.let { track ->
-            updateDownloadStatus(track, true)
-        }
-        reduce { state.copy(isTrackUpdating = false) }
-    }
-
-    private fun trackDownloadFail(exception: Exception?) = intent {
-        reduce { state.copy(isTrackUpdating = false) }
-        postSideEffect(TrackPlaybackSideEffect.TrackDownloadFail(e = exception))
-    }
-
     private fun calculateProgressValue(currentProgress: Long) = intent {
         reduce {
             val progress = if (state.duration > 0 && currentProgress > 0) {
@@ -275,11 +249,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
 
             state.copy(progress = progress)
         }
-    }
-
-    private fun getTrackFromPlaylistById(idStr: String): TrackData? {
-        val id = idStr.toLongOrNull()
-        return trackList.find { it.trackID == id }
     }
 
     override fun onCleared() {
