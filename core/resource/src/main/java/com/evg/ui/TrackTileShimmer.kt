@@ -1,7 +1,6 @@
 package com.evg.ui
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.BorderRadius
 import com.evg.ui.theme.DeezerPlayerTheme
-import com.valentinilk.shimmer.shimmer
 import kotlin.random.Random
 
 @Composable
@@ -38,16 +36,11 @@ fun TrackTileShimmer() {
             .clip(RoundedCornerShape(BorderRadius))
     ) {
         Row {
-            Box(
-                modifier = Modifier.shimmer(),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(height)
-                        .clip(shape = RoundedCornerShape(BorderRadius))
-                        .background(AppTheme.colors.shimmer)
-                )
-            }
+            Shimmer(
+                modifier = Modifier
+                    .size(height)
+                    .clip(shape = RoundedCornerShape(BorderRadius))
+            )
 
             Column(
                 modifier = Modifier
@@ -58,20 +51,18 @@ fun TrackTileShimmer() {
                     ),
                 verticalArrangement = Arrangement.Center,
             ) {
-                Box(
+                Shimmer(
                     modifier = Modifier
                         .height(10.dp)
                         .width(Random.nextInt(70, 151).dp)
                         .clip(shape = RoundedCornerShape(BorderRadius))
-                        .background(AppTheme.colors.shimmer)
                 )
                 Spacer(Modifier.height(5.dp))
-                Box(
+                Shimmer(
                     modifier = Modifier
                         .height(10.dp)
                         .width(Random.nextInt(70, 151).dp)
                         .clip(shape = RoundedCornerShape(BorderRadius))
-                        .background(AppTheme.colors.shimmer)
                 )
             }
         }

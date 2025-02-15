@@ -51,9 +51,6 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
-    // Shimmer
-    implementation(libs.shimmer.compose)
-
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)

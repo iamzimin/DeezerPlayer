@@ -30,18 +30,10 @@ fun PreviewImage(
         alignment = Alignment.CenterStart,
         contentScale = ContentScale.Crop,
         loading = {
-            Box(
+            Shimmer(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(shape = RoundedCornerShape(BorderRadius))
-                    .shimmer(),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.LightGray)
-                )
-            }
+            )
         },
         error = {
             ImageError()
