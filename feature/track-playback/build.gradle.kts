@@ -51,6 +51,9 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
+    // Constraint Layout
+    implementation(libs.androidx.ui.constraintlayout)
+
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)

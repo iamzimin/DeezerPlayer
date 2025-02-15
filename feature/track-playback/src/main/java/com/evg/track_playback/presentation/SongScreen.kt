@@ -8,54 +8,40 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.evg.resource.R
 import com.evg.track_playback.domain.model.TrackData
-import com.evg.track_playback.presentation.mapper.toFormattedTime
-import com.evg.track_playback.presentation.mapper.toFormattedTimeWithProgress
 import com.evg.track_playback.presentation.model.PlaylistState
 import com.evg.track_playback.presentation.mvi.TrackPlaybackAction
-import com.evg.ui.extensions.clickableRipple
 import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
-import com.evg.ui.theme.VerticalPadding
+import com.evg.ui.theme.HorizontalPadding
 
 @Composable
 fun SongScreen(
@@ -66,6 +52,7 @@ fun SongScreen(
     duration: Long,
     isTrackDownloading: Boolean,
     onPreviousScreen: () -> Unit,
+    onBackgroundImageReady: (url: String) -> Unit,
 ) {
     val currentPlayId = state.currentPlayingIndex?.coerceAtMost(state.trackLists.lastIndex)
     if (currentPlayId == null || state.trackLists.isEmpty()) {
@@ -77,11 +64,14 @@ fun SongScreen(
 
     val currentTrack = state.trackLists[currentPlayId]
     var playingSongIndex by remember { mutableIntStateOf(0) }
-    var seekbarPosition by remember { mutableFloatStateOf(progress) }
     val pagerState = rememberPagerState(
         initialPage = currentPlayId,
         pageCount = { state.trackLists.count() },
     )
+
+    LaunchedEffect(currentTrack) {
+        onBackgroundImageReady(currentTrack.albumCover)
+    }
 
     LaunchedEffect(currentPlayId) {
         playingSongIndex = currentPlayId
@@ -105,52 +95,26 @@ fun SongScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-
             AnimatedContent(
                 targetState = playingSongIndex,
                 transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
             ) { animatedIndex ->
                 val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
                 Text(
-                    text = state.trackLists[index].trackTitle,
-                    color = AppTheme.colors.text,
-                    style = AppTheme.typography.heading,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            AnimatedContent(
-                targetState = playingSongIndex,
-                transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
-            ) { animatedIndex ->
-                val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
-                Text(
+                    modifier = Modifier.padding(horizontal = HorizontalPadding),
                     text = state.trackLists[index].albumTitle,
-                    color = AppTheme.colors.text,
-                    style = AppTheme.typography.body,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            AnimatedContent(
-                targetState = playingSongIndex,
-                transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
-            ) { animatedIndex ->
-                val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
-                Text(
-                    text = state.trackLists[index].artistName,
-                    color = AppTheme.colors.text,
+                    color = Color.White,
                     style = AppTheme.typography.body,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
 
-            Spacer(modifier = Modifier.height(VerticalPadding))
 
-            val pageWidth = (configuration.screenWidthDp / 1.7).dp
-            val horizontalPadding = ((configuration.screenWidthDp.dp - pageWidth) / 2)
+            Spacer(Modifier.height(20.dp))
+
+            val pageWidth = (configuration.smallestScreenWidthDp / 1.4).dp
+            val horizontalPadding = ((configuration.smallestScreenWidthDp.dp - pageWidth) / 2)
             HorizontalPager(
                 modifier = Modifier.fillMaxWidth(),
                 state = pagerState,
@@ -161,119 +125,64 @@ fun SongScreen(
                 val isCurrentPage = page == pagerState.currentPage
                 AlbumCoverAnimation(
                     modifier = Modifier
-                        .size(350.dp)
+                        .size(pageWidth)
                         .padding(horizontal = 20.dp),
                     isSongPlaying = isCurrentPage && isPlaying,
                     albumCover = state.trackLists[page].albumCover
                 )
             }
-            Spacer(modifier = Modifier.height(50.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 30.dp),
-            ) {
 
-                Slider(
-                    value = progress,
-                    onValueChange = { newValue ->
-                        seekbarPosition = newValue
-                    },
-                    onValueChangeFinished = {
-                        dispatch(TrackPlaybackAction.SeekTo(seekbarPosition))
-                    },
-                    valueRange = 0f..100f,
+            Spacer(Modifier.height(40.dp))
+
+
+            AnimatedContent(
+                targetState = playingSongIndex,
+                transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
+            ) { animatedIndex ->
+                val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
+                Text(
+                    modifier = Modifier.padding(horizontal = HorizontalPadding),
+                    text = state.trackLists[index].trackTitle,
+                    color = Color.White,
+                    style = AppTheme.typography.heading,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = duration.toFormattedTimeWithProgress(progress = progress),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(10.dp),
-                        color = AppTheme.colors.text,
-                        style = AppTheme.typography.small,
-                    )
-
-                    Text(
-                        text = duration.toFormattedTime(),
-                        modifier = Modifier
-                            .padding(10.dp),
-                        color = AppTheme.colors.text,
-                        style = AppTheme.typography.small,
-                    )
-                }
             }
+            Spacer(Modifier.height(5.dp))
+            AnimatedContent(
+                targetState = playingSongIndex,
+                transitionSpec = { (scaleIn() + fadeIn()) togetherWith (scaleOut() + fadeOut()) },
+            ) { animatedIndex ->
+                val index = animatedIndex.coerceAtMost(state.trackLists.lastIndex)
+                Text(
+                    modifier = Modifier.padding(horizontal = HorizontalPadding),
+                    text = state.trackLists[index].artistName,
+                    color = Color.White,
+                    style = AppTheme.typography.body,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            Spacer(Modifier.height(30.dp))
+
+
+            Slider(
+                progress = progress,
+                duration = duration,
+                seekTo = { dispatch(TrackPlaybackAction.SeekTo(it)) }
+            )
+
             Spacer(modifier = Modifier.height(20.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val iconSize = 40.dp
-                Icon(
-                    modifier = Modifier
-                        .size(iconSize)
-                        .clickableRipple {
-                            dispatch(TrackPlaybackAction.SeekToPrev)
-                        },
-                    painter = painterResource(R.drawable.backward),
-                    contentDescription = null,
-                    tint = AppTheme.colors.text,
-                )
-                Icon(
-                    modifier = Modifier
-                        .size(iconSize)
-                        .clickableRipple {
-                            dispatch(TrackPlaybackAction.PlayPause)
-                        },
-                    painter = if (isPlaying) {
-                        painterResource(R.drawable.pause)
-                    } else {
-                        painterResource(R.drawable.play)
-                    },
-                    contentDescription = null,
-                    tint = AppTheme.colors.text,
-                )
-                Icon(
-                    modifier = Modifier
-                        .size(iconSize)
-                        .rotate(180f)
-                        .clickableRipple {
-                            dispatch(TrackPlaybackAction.SeekToNext)
-                        },
-                    painter = painterResource(R.drawable.backward),
-                    contentDescription = null,
-                    tint = AppTheme.colors.text,
-                )
 
-
-                Spacer(Modifier.width(20.dp))
-
-                if (isTrackDownloading) {
-                    CircularProgressIndicator()
-                } else {
-                    Icon(
-                        modifier = Modifier
-                            .size(iconSize)
-                            .clickableRipple {
-                                if (currentTrack.isDownloaded) {
-                                    dispatch(TrackPlaybackAction.RemoveTrack)
-                                } else {
-                                    dispatch(TrackPlaybackAction.SaveTrack)
-                                }
-                            },
-                        painter = if (currentTrack.isDownloaded) {
-                            painterResource(R.drawable.trash)
-                        } else {
-                            painterResource(R.drawable.download)
-                        },
-                        contentDescription = null,
-                        tint = AppTheme.colors.text,
-                    )
-                }
-            }
+            ActionButtons(
+                modifier = Modifier.fillMaxWidth(),
+                isPlaying = isPlaying,
+                isDownloaded = currentTrack.isDownloaded,
+                isTrackDownloading = isTrackDownloading,
+                dispatch = dispatch,
+            )
         }
     }
 }
@@ -306,6 +215,7 @@ fun SongScreenPreview(darkTheme: Boolean = true) {
                 duration = 200,
                 isTrackDownloading = false,
                 onPreviousScreen = {},
+                onBackgroundImageReady = {},
             )
         }
     }

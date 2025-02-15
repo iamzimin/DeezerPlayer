@@ -1,6 +1,7 @@
 package com.evg.track_playback.presentation
 
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,11 +28,15 @@ fun TrackPlaybackRoot(
     viewModel: TrackPlaybackViewModel = hiltViewModel<TrackPlaybackViewModel>(),
     modifier: Modifier,
     onPreviousScreen: () -> Unit,
+    onBackgroundImageReady: (url: String) -> Unit,
 ) {
+    BackHandler {
+        onPreviousScreen()
+    }
+
     val context = LocalContext.current
     val trackDownloadedString = stringResource(R.string.track_success_download)
     val trackRemoveString = stringResource(R.string.track_success_remove)
-    val unknownError = stringResource(R.string.error_unknown)
     var isServiceRunning by rememberSaveable { mutableStateOf(false) }
 
     viewModel.collectSideEffect { sideEffect ->
@@ -67,5 +72,6 @@ fun TrackPlaybackRoot(
         dispatch = viewModel::dispatch,
         modifier = modifier,
         onPreviousScreen = onPreviousScreen,
+        onBackgroundImageReady = onBackgroundImageReady,
     )
 }

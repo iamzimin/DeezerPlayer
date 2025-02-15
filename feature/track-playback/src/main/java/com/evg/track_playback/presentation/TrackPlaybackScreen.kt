@@ -27,6 +27,7 @@ fun TrackPlaybackScreen(
     dispatch: (TrackPlaybackAction) -> Unit,
     modifier: Modifier = Modifier,
     onPreviousScreen: () -> Unit,
+    onBackgroundImageReady: (url: String) -> Unit,
 ) {
     val uiState = state.playlistState
 
@@ -58,6 +59,7 @@ fun TrackPlaybackScreen(
                     duration = state.duration,
                     isTrackDownloading = state.isTrackUpdating,
                     onPreviousScreen = onPreviousScreen,
+                    onBackgroundImageReady = onBackgroundImageReady,
                 )
             }
         }
@@ -75,6 +77,7 @@ fun TrackPlaybackScreenPreview(darkTheme: Boolean = true) {
                 ),
                 dispatch = {},
                 onPreviousScreen = {},
+                onBackgroundImageReady = {},
             )
             /*
             TrackData(
