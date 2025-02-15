@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -70,10 +73,11 @@ fun SongScreen(
         return
     }
 
+    val configuration = LocalConfiguration.current
+
     val currentTrack = state.trackLists[currentPlayId]
     var playingSongIndex by remember { mutableIntStateOf(0) }
     var seekbarPosition by remember { mutableFloatStateOf(progress) }
-
     val pagerState = rememberPagerState(
         initialPage = currentPlayId,
         pageCount = { state.trackLists.count() },
@@ -97,8 +101,6 @@ fun SongScreen(
             .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        val configuration = LocalConfiguration.current
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -156,11 +158,14 @@ fun SongScreen(
                 pageSize = PageSize.Fixed(pageWidth),
                 verticalAlignment = Alignment.CenterVertically,
             ) { page ->
-                if (page == pagerState.currentPage) {
-                    VinylAlbumCoverAnimation(isSongPlaying = isPlaying, albumCover = state.trackLists[page].albumCover)
-                } else {
-                    VinylAlbumCoverAnimation(isSongPlaying = false, albumCover = state.trackLists[page].albumCover)
-                }
+                val isCurrentPage = page == pagerState.currentPage
+                AlbumCoverAnimation(
+                    modifier = Modifier
+                        .size(350.dp)
+                        .padding(horizontal = 20.dp),
+                    isSongPlaying = isCurrentPage && isPlaying,
+                    albumCover = state.trackLists[page].albumCover
+                )
             }
             Spacer(modifier = Modifier.height(50.dp))
             Column(
