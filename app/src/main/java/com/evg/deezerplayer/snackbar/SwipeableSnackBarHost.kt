@@ -19,6 +19,7 @@ import androidx.wear.compose.material.ExperimentalWearMaterialApi
 import androidx.wear.compose.material.FractionalThreshold
 import androidx.wear.compose.material.rememberSwipeableState
 import androidx.wear.compose.material.swipeable
+import com.evg.ui.theme.AppTheme
 
 enum class SwipeDirection {
     Left,
@@ -63,8 +64,9 @@ fun SwipeableSnackBarHost(hostState: SnackbarHostState) {
             Snackbar(
                 snackbarData = snackBarData,
                 modifier = Modifier.offset(x = offset),
-                //containerColor = AppTheme.colors.background,
-                //contentColor = AppTheme.colors.text,
+                containerColor = AppTheme.colors.snackBarBackground,
+                contentColor = AppTheme.colors.text,
+                actionColor = AppTheme.colors.primary,
             )
         },
         modifier = Modifier

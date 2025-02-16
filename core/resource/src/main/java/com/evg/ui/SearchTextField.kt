@@ -69,9 +69,11 @@ fun SearchTextField(
             unfocusedTextColor = AppTheme.colors.text,
             cursorColor = AppTheme.colors.primary,
             focusedIndicatorColor = AppTheme.colors.primary,
-            unfocusedIndicatorColor = AppTheme.colors.primary.makeTransparent(0.4f),
+            unfocusedIndicatorColor = AppTheme.colors.primary,
             focusedLabelColor = AppTheme.colors.primary,
-            unfocusedLabelColor = AppTheme.colors.primary.makeTransparent(0.6f),
+            unfocusedLabelColor = AppTheme.colors.primary,
+            focusedContainerColor = AppTheme.colors.textFieldBackground,
+            unfocusedContainerColor = AppTheme.colors.textFieldBackground,
         )
     )
 }

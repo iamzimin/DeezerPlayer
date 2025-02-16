@@ -12,8 +12,9 @@ data class AppPalette(
 
     // TextField
     val textField: Color,
-    val textFieldName: Color,
     val textFieldBackground: Color,
+
+    val snackBarBackground: Color,
 
     // BottomBar
     val bottomBarSelected: Color,
@@ -24,7 +25,7 @@ enum class AppStyle {
 }
 
 val baseDarkPalette = AppPalette(
-    primary = Color(0xFF81C784),
+    primary = Color(0xFF6EB171),
     secondary = Color(0xFF2E7D32),
     background = Color(0xFF1B1F1B),
     shimmer = Color.LightGray,
@@ -33,16 +34,17 @@ val baseDarkPalette = AppPalette(
 
     // TextField
     textField = Color(0xFF6C8D6C),
-    textFieldName = Color(0xFFAAAAAA),
-    textFieldBackground = Color(0xFF1C2D1C),
+    textFieldBackground = Color(0xFF1F321F),
+
+    snackBarBackground = Color(0xFF373737),
 
     // BottomBar
     bottomBarSelected = Color(0xFF2F5234),
 )
 
 val baseLightPalette = AppPalette(
-    primary = Color(0xFF4CAF50),
-    secondary = Color(0xFF81C784),
+    primary = Color(0xFF47A54A),
+    secondary = Color(0xFF386839),
     background = Color(0xFFFFFFFF),
     shimmer = Color.Gray,
 
@@ -50,9 +52,10 @@ val baseLightPalette = AppPalette(
 
     // TextField
     textField = Color(0xFF6C8D6C),
-    textFieldName = Color(0xFFAAAAAA),
     textFieldBackground = Color(0xFFE8F5E9),
 
+    snackBarBackground = Color(0xFFCDCDCD),
+
     // BottomBar
-    bottomBarSelected = Color(0xFF388E3C),
+    bottomBarSelected = Color(0xFF65AA68),
 )
