@@ -3,16 +3,13 @@ agp = "8.8.0"
 kotlin = "2.1.10"
 ksp = "2.1.10-1.0.29"
 coreKtx = "1.15.0"
-junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
 composeBom = "2025.01.01"
-appcompat = "1.7.0"
 orbit = "9.0.0"
 navigation = "2.8.6"
-material = "1.12.0"
 paging = "3.3.5"
 swipeRefresh = "0.24.13-rc"
 shimmer = "1.3.0"
@@ -20,7 +17,6 @@ serialization = "1.8.0"
 hilt = "2.55"
 hiltNavigation = "1.2.0"
 retrofit = "2.11.0"
-okhttp3Interceptor = "5.0.0-alpha.10"
 converterGson = "2.3.0"
 room = "2.6.1"
 coil = "2.7.0"
@@ -32,12 +28,13 @@ constraintLayout = "1.1.0"
 firebaseCrashlytics = "19.4.0"
 googleGmsGoogleServices = "4.4.2"
 googleFirebaseCrashlytics = "3.0.3"
+junitJupiter = "5.8.2"
+truth = "1.4.4"
+mockitoCore = "5.12.0"
+mockitoKotlin = "5.3.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -52,6 +49,14 @@ androidx-ui-constraintlayout = { group = "androidx.constraintlayout", name = "co
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 # androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 # material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+# Unit test
+junit = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+google-truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoCore" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
 # Dagger hilt
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
@@ -72,8 +77,6 @@ shimmer-compose = { group = "com.valentinilk.shimmer", name = "compose-shimmer",
 # Retrofit
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" }
-okhttp3-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3Interceptor" }
-# commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "tarConverter" }
 
 # Room
 room-common = { group = "androidx.room", name = "room-common", version.ref = "room" }
