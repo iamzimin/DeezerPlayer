@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.hilt.plugin)
     alias(libs.plugins.kotlin.serializable)
     alias(libs.plugins.jetbrains.kotlin.ksp)
+    alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
@@ -60,6 +62,9 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    // Firebase
+    implementation(libs.firebase.crashlytics)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

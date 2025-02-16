@@ -29,6 +29,9 @@ materialVersion = "1.12.0"
 composeMaterial = "1.4.1"
 media3 = "1.5.1"
 constraintLayout = "1.1.0"
+firebaseCrashlytics = "19.4.0"
+googleGmsGoogleServices = "4.4.2"
+googleFirebaseCrashlytics = "3.0.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -101,6 +104,9 @@ androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.re
 androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
 androidx-media3-datasource-okhttp = { group = "androidx.media3", name = "media3-datasource-okhttp", version.ref = "media3" }
 
+# Firebase
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -110,3 +116,5 @@ jetbrains-kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serializable = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
+google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }
