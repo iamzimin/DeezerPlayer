@@ -25,6 +25,7 @@ import com.evg.resource.R
 @Composable
 fun TopBar(
     navigation: NavController,
+    onPreviousScreen: () -> Unit,
 ) {
     val navBackStackEntry by navigation.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -39,7 +40,7 @@ fun TopBar(
         TopAppBar(
             title = {},
             navigationIcon = {
-                IconButton(onClick = { navigation.popBackStack() }) {
+                IconButton(onClick = onPreviousScreen) {
                     Icon(
                         modifier = Modifier.size(20.dp),
                         painter = painterResource(R.drawable.navigation_back),

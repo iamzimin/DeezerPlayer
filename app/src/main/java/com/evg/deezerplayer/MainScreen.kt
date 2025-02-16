@@ -101,7 +101,13 @@ fun MainScreen() {
 
     Scaffold(
         modifier = Modifier.fillMaxSize().imePadding(),
-        topBar = { TopBar(navController) },
+        topBar = { TopBar(
+            navigation = navController,
+            onPreviousScreen = {
+                imageUrl = null
+                navController.popBackStack()
+            })
+        },
         bottomBar = { BottomBar(navController) },
         containerColor = if (debouncedImageUrl == null) AppTheme.colors.background else Color.Transparent,
         snackbarHost = { SwipeableSnackBarHost(hostState = snackBarHostState) }
