@@ -120,7 +120,7 @@ fun Slider(
             Text(
                 text = duration.toFormattedTime(),
                 modifier = Modifier
-                    .padding(5.dp),
+                    .padding(horizontal = 13.dp),
                 color = Color.White,
                 style = AppTheme.typography.small,
             )
