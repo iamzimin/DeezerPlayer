@@ -96,11 +96,12 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
             ) {
                 when (download.state) {
                     Download.STATE_COMPLETED -> saveTrackToDB(download)
-                    Download.STATE_REMOVING -> removeTrackFromDB(download)
                     Download.STATE_FAILED -> trackDownloadFail(finalException)
                 }
             }
-            override fun onDownloadRemoved(downloadManager: DownloadManager, download: Download) {}
+            override fun onDownloadRemoved(downloadManager: DownloadManager, download: Download) {
+                removeTrackFromDB(download)
+            }
         })
     }
 
