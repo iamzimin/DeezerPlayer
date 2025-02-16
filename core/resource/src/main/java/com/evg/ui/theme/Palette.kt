@@ -60,5 +60,5 @@ val baseLightPalette = AppPalette(
     snackBarBackground = Color(0xFFCDCDCD),
 
     // BottomBar
-    bottomBarSelected = Color(0xFF65AA68),
+    bottomBarSelected = Color(0xFF7ECD81),
 )

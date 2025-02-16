@@ -31,6 +31,7 @@
         </activity>
         
         <service android:name="com.evg.track_playback.presentation.service.AudioService"
+            tools:ignore="Instantiatable"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>
@@ -39,6 +40,7 @@
         </service>
 
         <service android:name="com.evg.track_playback.presentation.service.AudioDownloadService"
+            tools:ignore="Instantiatable"
             android:exported="false"
             android:foregroundServiceType="dataSync">
             <intent-filter>

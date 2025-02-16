@@ -7,6 +7,7 @@ import com.evg.database.domain.models.TracksDBO
 @Database(
     entities = [TracksDBO::class],
     version = 1,
+    exportSchema = false,
 )
 abstract class TracksDatabase: RoomDatabase() {
     abstract val tracksDao: TracksDao
