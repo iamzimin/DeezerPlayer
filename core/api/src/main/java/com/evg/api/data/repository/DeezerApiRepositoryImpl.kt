@@ -78,6 +78,15 @@ class DeezerApiRepositoryImpl(
      * @return Результат запроса с данными [SearchTrackResponse] или ошибкой [NetworkError]
      */
     override suspend fun searchTrackByPage(query: String, index: Int): ServerResult<SearchTrackResponse, NetworkError> {
+        if (query.isBlank()) {
+            return ServerResult.Success(
+                SearchTrackResponse(
+                    data = null,
+                    prev = null,
+                    next = null,
+                )
+            )
+        }
         return safeApiCall { deezerApi.searchTrack(query = query, index = index) }
     }
 
