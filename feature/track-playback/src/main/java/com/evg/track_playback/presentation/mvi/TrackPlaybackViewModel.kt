@@ -47,29 +47,27 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         initPlaylist()
     }
 
-    private fun initAudioStateCollecting() {
-        intent {
-            postSideEffect(TrackPlaybackSideEffect.StartService)
-            audioServiceHandler.audioState.collectLatest { mediaState ->
-                when (mediaState) {
-                    AudioState.Initial -> reduce { state.copy(playlistState = PlaylistState.Loading) }
-                    is AudioState.Playing -> reduce { state.copy(isPlaying = mediaState.isPlaying) }
-                    is AudioState.Progress -> calculateProgressValue(mediaState.progress)
-                    is AudioState.Ready -> {
-                        reduce { state.copy(duration = mediaState.duration) }
-                        audioServiceHandler.onPlayerEvents(PlayerEvent.Play)
-                    }
-                    is AudioState.PlayError -> {
-                        postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(e = mediaState.e))
-                    }
-                    is AudioState.CurrentPlaying -> {
-                        reduce { state.copy(
-                            playlistState = PlaylistState.Ready(
-                                trackLists = playlistHandler.getPlaylist(),
-                                currentPlayingIndex = mediaState.mediaItemIndex,
-                            ),
-                        )}
-                    }
+    private fun initAudioStateCollecting() = intent {
+       postSideEffect(TrackPlaybackSideEffect.StartService)
+        audioServiceHandler.audioState.collectLatest { mediaState ->
+            when (mediaState) {
+                AudioState.Initial -> reduce { state.copy(playlistState = PlaylistState.Loading) }
+                is AudioState.Playing -> reduce { state.copy(isPlaying = mediaState.isPlaying) }
+                is AudioState.Progress -> calculateProgressValue(mediaState.progress)
+                is AudioState.Ready -> {
+                    reduce { state.copy(duration = mediaState.duration) }
+                    audioServiceHandler.onPlayerEvents(PlayerEvent.Play)
+                }
+                is AudioState.PlayError -> {
+                    postSideEffect(TrackPlaybackSideEffect.TrackPlaybackFail(e = mediaState.e))
+                }
+                is AudioState.CurrentPlaying -> {
+                    reduce { state.copy(
+                        playlistState = PlaylistState.Ready(
+                            trackLists = playlistHandler.getPlaylist(),
+                            currentPlayingIndex = mediaState.mediaItemIndex,
+                        ),
+                    )}
                 }
             }
         }
@@ -102,15 +100,15 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     }
 
 
-    fun dispatch(action: TrackPlaybackAction) = viewModelScope.launch {
+    fun dispatch(action: TrackPlaybackAction) = intent {
         when (action) {
             TrackPlaybackAction.LoadPlaylist -> initPlaylist()
             TrackPlaybackAction.SaveTrack -> {
-                intent { reduce { state.copy(isTrackUpdating = true) } }
+                reduce { state.copy(isTrackUpdating = true) }
                 audioServiceHandler.onPlayerEvents(PlayerEvent.DownloadCurrentTrack)
             }
             TrackPlaybackAction.RemoveTrack -> {
-                intent { reduce { state.copy(isTrackUpdating = true) } }
+                reduce { state.copy(isTrackUpdating = true) }
                 audioServiceHandler.onPlayerEvents(PlayerEvent.RemoveCurrentTrack(!isOnlineMode))
             }
             TrackPlaybackAction.SeekToPrev -> audioServiceHandler.onPlayerEvents(PlayerEvent.SeekToPrev)
@@ -123,7 +121,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
             }
             is TrackPlaybackAction.UpdateProgress -> {
                 audioServiceHandler.onPlayerEvents(PlayerEvent.UpdateProgress(action.newProgress))
-                intent { reduce { state.copy(progress = action.newProgress) } }
+                reduce { state.copy(progress = action.newProgress) }
             }
         }
     }
@@ -256,9 +254,7 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     }
 
     override fun onCleared() {
-        viewModelScope.launch {
-            audioServiceHandler.onPlayerEvents(PlayerEvent.Stop)
-        }
+        audioServiceHandler.onPlayerEvents(PlayerEvent.Stop)
         super.onCleared()
     }
 }

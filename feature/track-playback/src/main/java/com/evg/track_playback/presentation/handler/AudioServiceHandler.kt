@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 
@@ -55,25 +56,27 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
-    suspend fun onPlayerEvents(
+    fun onPlayerEvents(
         playerEvent: PlayerEvent,
-    ) {
-        when (playerEvent) {
-            PlayerEvent.DownloadCurrentTrack -> downloadTrack()
-            is PlayerEvent.RemoveCurrentTrack -> removeTrack(playerEvent.isRemoveCurrentMedia)
-            PlayerEvent.SeekToPrev -> exoPlayer.seekToPrevious()
-            PlayerEvent.SeekToNext -> exoPlayer.seekToNext()
-            PlayerEvent.Play -> play()
-            PlayerEvent.PlayPause -> playOrPause()
-            PlayerEvent.Stop -> stopProgressUpdate()
-            is PlayerEvent.PlayByIndex -> {
-                if (playerEvent.index != exoPlayer.currentMediaItemIndex) {
-                    exoPlayer.seekToDefaultPosition(playerEvent.index)
+    ) = serviceScope.launch {
+        withContext(Dispatchers.Main) {
+            when (playerEvent) {
+                PlayerEvent.DownloadCurrentTrack -> downloadTrack()
+                is PlayerEvent.RemoveCurrentTrack -> removeTrack(playerEvent.isRemoveCurrentMedia)
+                PlayerEvent.SeekToPrev -> exoPlayer.seekToPrevious()
+                PlayerEvent.SeekToNext -> exoPlayer.seekToNext()
+                PlayerEvent.Play -> play()
+                PlayerEvent.PlayPause -> playOrPause()
+                PlayerEvent.Stop -> stopProgressUpdate()
+                is PlayerEvent.PlayByIndex -> {
+                    if (playerEvent.index != exoPlayer.currentMediaItemIndex) {
+                        exoPlayer.seekToDefaultPosition(playerEvent.index)
+                    }
                 }
-            }
-            is PlayerEvent.SeekTo -> exoPlayer.seekTo(playerEvent.seekPosition)
-            is PlayerEvent.UpdateProgress -> {
-                exoPlayer.seekTo((exoPlayer.duration * playerEvent.newProgress).toLong())
+                is PlayerEvent.SeekTo -> exoPlayer.seekTo(playerEvent.seekPosition)
+                is PlayerEvent.UpdateProgress -> {
+                    exoPlayer.seekTo((exoPlayer.duration * playerEvent.newProgress).toLong())
+                }
             }
         }
     }
