@@ -130,7 +130,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
                 audioServiceHandler.onPlayerEvents(PlayerEvent.DownloadCurrentTrack)
             }
             TrackPlaybackAction.RemoveTrack -> {
-                reduce { state.copy(isTrackUpdating = true) }
                 audioServiceHandler.onPlayerEvents(PlayerEvent.RemoveCurrentTrack(!isOnlineMode))
             }
             TrackPlaybackAction.SeekToPrev -> audioServiceHandler.onPlayerEvents(PlayerEvent.SeekToPrev)
@@ -245,7 +244,6 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         playlistHandler.findTrackById(download.request.id)?.let { track ->
             updateDownloadStatus(track, true)
         }
-        reduce { state.copy(isTrackUpdating = false) }
     }
 
     /**
