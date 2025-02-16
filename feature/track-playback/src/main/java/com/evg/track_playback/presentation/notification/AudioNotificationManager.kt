@@ -16,6 +16,12 @@ import com.evg.resource.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+/**
+ * Менеджер уведомлений аудиоплеера
+ *
+ * @param context Контекст приложения
+ * @param exoPlayer ExoPlayer для управления воспроизведением
+ */
 class AudioNotificationManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val exoPlayer: ExoPlayer,
@@ -33,6 +39,12 @@ class AudioNotificationManager @Inject constructor(
         createNotificationChannel()
     }
 
+    /**
+     * Запускает сервис уведомлений в режиме foreground
+     *
+     * @param mediaSessionService Сервис медиа сессии для запуска уведомлений
+     * @param mediaSession Медиа сессия для управления уведомлением
+     */
     @UnstableApi
     fun startNotificationService(
         mediaSessionService: MediaSessionService,
@@ -42,6 +54,11 @@ class AudioNotificationManager @Inject constructor(
         startForeGroundNotificationService(mediaSessionService)
     }
 
+    /**
+     * Запускает сервис уведомлений в режиме foreground с созданным уведомлением
+     *
+     * @param mediaSessionService Сервис медиа сессии
+     */
     private fun startForeGroundNotificationService(mediaSessionService: MediaSessionService) {
         val notification = Notification.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setCategory(Notification.CATEGORY_SERVICE)
@@ -49,6 +66,11 @@ class AudioNotificationManager @Inject constructor(
         mediaSessionService.startForeground(NOTIFICATION_ID, notification)
     }
 
+    /**
+     * Строит уведомление для управления воспроизведением через медиасессию
+     *
+     * @param mediaSession Медиа сессия для построения уведомления
+     */
     @UnstableApi
     private fun buildNotification(mediaSession: MediaSession) {
         PlayerNotificationManager.Builder(

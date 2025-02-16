@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
@@ -13,20 +12,26 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import com.evg.api.domain.utils.ServerResult
 import com.evg.track_playback.domain.model.TrackData
 import com.evg.track_playback.domain.repository.TrackPlaybackRepository
+import com.evg.track_playback.presentation.handler.AudioServiceHandler
 import com.evg.track_playback.presentation.handler.PlaylistHandler
 import com.evg.track_playback.presentation.model.AudioState
 import com.evg.track_playback.presentation.model.PlayerEvent
 import com.evg.track_playback.presentation.model.PlaylistState
-import com.evg.track_playback.presentation.handler.AudioServiceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.Syntax
 import org.orbitmvi.orbit.viewmodel.container
-import java.lang.Exception
 import javax.inject.Inject
 
+/**
+ * ViewModel для управления воспроизведением треков
+ *
+ * @property audioServiceHandler Обработчик аудиосервиса
+ * @property trackPlaybackRepository Репозиторий воспроизведения треков
+ * @property savedStateHandle Сохраненное состояние
+ * @property downloadManager Менеджер загрузок
+ */
 @HiltViewModel
 class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     private val audioServiceHandler: AudioServiceHandler,
@@ -47,6 +52,9 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         initPlaylist()
     }
 
+    /**
+     * Инициализирует сбор данных о состоянии аудиоплеера
+     */
     private fun initAudioStateCollecting() = intent {
        postSideEffect(TrackPlaybackSideEffect.StartService)
         audioServiceHandler.audioState.collectLatest { mediaState ->
@@ -73,6 +81,11 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Настраивает слушателя событий загрузки треков
+     *
+     * @param downloadManager Менеджер загрузок
+     */
     @OptIn(UnstableApi::class)
     private fun initDownloadManager(downloadManager: DownloadManager) {
         downloadManager.addListener(object : DownloadManager.Listener {
@@ -91,6 +104,9 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         })
     }
 
+    /**
+     * Инициализирует плейлист
+     */
     private fun initPlaylist() {
         if (isOnlineMode) {
             getAlbumListRemote(trackId)
@@ -100,6 +116,11 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     }
 
 
+    /**
+     * Обрабатывает действия пользователя
+     *
+     * @param action Действие пользователя
+     */
     fun dispatch(action: TrackPlaybackAction) = intent {
         when (action) {
             TrackPlaybackAction.LoadPlaylist -> initPlaylist()
@@ -127,7 +148,11 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     }
 
 
-
+    /**
+     * Загружает альбом с сервера по идентификатору трека
+     *
+     * @param trackId Идентификатор трека
+     */
     private fun getAlbumListRemote(trackId: Long) = intent {
         reduce { state.copy(playlistState = PlaylistState.Loading) }
         when (val response = trackPlaybackRepository.getAlbumByTrackId(id = trackId)) {
@@ -141,18 +166,35 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Получает треки из локальной базы данных
+     *
+     * @param trackId Идентификатор трека
+     */
     private fun getTracksLocal(trackId: Long) = intent {
         reduce { state.copy(playlistState = PlaylistState.Loading) }
         val response = trackPlaybackRepository.getTracksFromDatabase()
         loadTracks(response, trackId)
     }
 
+    /**
+     * Загружает список треков и устанавливает медиа-элементы
+     *
+     * @param tracks Список треков
+     * @param trackId Идентификатор текущего трека
+     */
     private fun loadTracks(tracks: List<TrackData>, trackId: Long) = intent {
         playlistHandler.setPlaylist(tracks)
         val startIndex = tracks.indexOfFirst { it.trackID == trackId }.let { if (it < 0) 0 else it }
         setMediaItems(tracks, startIndex)
     }
 
+    /**
+     * Устанавливает список медиа-элементов в аудиосервис
+     *
+     * @param trackLists Список треков
+     * @param startIndex Индекс начального трека
+     */
     private fun setMediaItems(trackLists: List<TrackData>, startIndex: Int) {
         trackLists.map { audio ->
             MediaItem.Builder()
@@ -179,6 +221,11 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
     }
 
 
+    /**
+     * Сохраняет трек в базу данных после загрузки
+     *
+     * @param download Данные о загрузке трека
+     */
     @OptIn(UnstableApi::class)
     private fun saveTrackToDB(download: Download) = intent {
         playlistHandler.findTrackById(download.request.id)?.let { track ->
@@ -187,6 +234,11 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         reduce { state.copy(isTrackUpdating = false) }
     }
 
+    /**
+     * Удаляет трек из базы данных после удаления
+     *
+     * @param download Данные о загруженном треке
+     */
     @OptIn(UnstableApi::class)
     private fun removeTrackFromDB(download: Download) = intent {
         playlistHandler.findTrackById(download.request.id)?.let { track ->
@@ -195,11 +247,22 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         reduce { state.copy(isTrackUpdating = false) }
     }
 
+    /**
+     * Обрабатывает ошибку загрузки трека
+     *
+     * @param exception Исключение, вызванное ошибкой загрузки
+     */
     private fun trackDownloadFail(exception: Exception?) = intent {
         reduce { state.copy(isTrackUpdating = false) }
         postSideEffect(TrackPlaybackSideEffect.TrackDownloadFail(e = exception))
     }
 
+    /**
+     * Обновляет статус загрузки трека
+     *
+     * @param track Трек, статус которого обновляется
+     * @param isDownloaded Флаг, указывающий, скачан ли трек
+     */
     private fun updateDownloadStatus(
         track: TrackData,
         isDownloaded: Boolean,
@@ -228,6 +291,12 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Обновляет информацию о треке в базе данных
+     *
+     * @param track Трек для обновления
+     * @param isDownloaded Флаг, указывающий, был ли трек удален
+     */
     private suspend fun Syntax<TrackPlaybackState, TrackPlaybackSideEffect>.updateTrackInDatabase(
         track: TrackData,
         isDownloaded: Boolean,
@@ -241,6 +310,11 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Вычисляет процент выполнения трека
+     *
+     * @param currentProgress Текущая позиция воспроизведения
+     */
     private fun calculateProgressValue(currentProgress: Long) = intent {
         reduce {
             val progress = if (state.duration > 0 && currentProgress > 0) {
@@ -253,6 +327,9 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Освобождает ресурсы при удалении ViewModel
+     */
     override fun onCleared() {
         audioServiceHandler.onPlayerEvents(PlayerEvent.Stop)
         super.onCleared()

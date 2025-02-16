@@ -5,10 +5,14 @@ import androidx.paging.PagingState
 import com.evg.api.domain.models.TrackResponse
 import com.evg.api.domain.repository.DeezerApiRepository
 import com.evg.api.domain.utils.NetworkError
-import com.evg.api.domain.utils.NetworkErrorException
 import com.evg.api.domain.utils.ServerResult
 import javax.inject.Inject
 
+/**
+ * Источник данных для пагинации при поиске треков через API
+ *
+ * @param apiRepository Репозиторий для выполнения запросов к API Deezer
+ */
 class SearchTrackPageSourceRemote @Inject constructor(
     private val apiRepository: DeezerApiRepository,
 ): PagingSource<Int, ServerResult<TrackResponse, NetworkError>>() {

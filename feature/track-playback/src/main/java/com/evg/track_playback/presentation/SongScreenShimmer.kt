@@ -32,6 +32,9 @@ import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.HorizontalPadding
 import kotlin.random.Random
 
+/**
+ * Эффект загрузки для экрана воспроизведения трека
+ */
 @Composable
 fun SongScreenShimmer() {
     val iconSize = 40.dp

@@ -6,6 +6,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.evg.tracks_downloaded.presentation.mvi.TracksDownloadedViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 
+/**
+ * Корневой экран загруженных треков
+ *
+ * @param viewModel ViewModel загруженных треков
+ * @param modifier Модификатор для стилизации
+ * @param onPlayerScreen Колбек для перехода на экран плеера
+ */
 @Composable
 fun TracksDownloadedRoot(
     viewModel: TracksDownloadedViewModel = hiltViewModel<TracksDownloadedViewModel>(),

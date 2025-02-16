@@ -12,5 +12,3 @@ enum class NetworkError: Error {
     CONNECT_EXCEPTION,
     UNKNOWN,
 }
-
-class NetworkErrorException(error: NetworkError) : Exception("Network error: $error")

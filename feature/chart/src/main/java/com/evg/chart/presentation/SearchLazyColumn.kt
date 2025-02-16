@@ -31,6 +31,14 @@ import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.LazyColumnSpacedBy
 import kotlinx.coroutines.flow.flowOf
 
+/**
+ * Отображает список найденных треков с поддержкой пагинации
+ *
+ * @param isChartLoading Флаг, указывающий, загружаются ли данные
+ * @param foundedTracks Список найденных треков с поддержкой пагинации
+ * @param onClick Колбэк, вызываемый при выборе трека
+ * @param searchTrack Функция для выполнения поиска треков
+ */
 @Composable
 fun SearchLazyColumn(
     isChartLoading: Boolean,

@@ -21,7 +21,15 @@ import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.HorizontalPadding
 
-
+/**
+ * Компонент кнопок управления воспроизведением трека
+ *
+ * @param modifier Модификатор для настройки внешнего вида и расположения
+ * @param isPlaying Флаг, указывающий, воспроизводится ли трек в данный момент
+ * @param isTrackDownloading Флаг, указывающий, идет ли загрузка трека
+ * @param isDownloaded Флаг, указывающий, загружен ли трек
+ * @param dispatch Функция для отправки событий воспроизведения
+ */
 @Composable
 fun ActionButtons(
     modifier: Modifier = Modifier,

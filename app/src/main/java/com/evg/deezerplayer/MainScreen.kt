@@ -16,15 +16,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -90,6 +86,8 @@ fun MainScreen() {
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
+                onLoading = {},
+                onError = {},
             )
             Box(
                 modifier = Modifier
@@ -143,7 +141,7 @@ fun MainScreen() {
             composable<Route.TrackPlayer> {
                 DeezerPlayerScaffold(
                     modifier = Modifier.padding(bottom = bottomNavPadding),
-                    isContainerTransient = debouncedImageUrl != null,
+                    isContainerTransparent = debouncedImageUrl != null,
                 ) { paddingValues ->
                     TrackPlaybackRoot(
                         modifier = Modifier.fillMaxSize().padding(paddingValues),

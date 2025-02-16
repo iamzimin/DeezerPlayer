@@ -9,6 +9,13 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import com.evg.ui.theme.AppTheme
 
+/**
+ * Добавляет эффект ряби при клике
+ *
+ * @param color Цвет ряби (по умолчанию используется цвет текста из темы)
+ * @param onClick Действие, выполняемое при клике
+ * @return [Modifier] с эффектом ряби
+ */
 fun Modifier.clickableRipple(color: Color? = null, onClick: () -> Unit): Modifier = composed {
     this.clickable(
         interactionSource = remember { MutableInteractionSource() },

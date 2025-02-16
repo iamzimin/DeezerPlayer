@@ -7,6 +7,12 @@ import androidx.compose.ui.Modifier
 import com.evg.ui.theme.AppTheme
 import com.valentinilk.shimmer.shimmer
 
+/**
+ * Компонент для отображения эффекта анимации загрузки
+ *
+ * @param modifier Модификатор для основного блока шиммера
+ * @param modifierTop Модификатор для контейнера с эффектом шиммера
+ */
 @Composable
 fun Shimmer(
     modifier: Modifier,

@@ -29,9 +29,14 @@ import com.evg.ui.theme.DeezerPlayerTheme
 
 val bottomNavPadding = 81.dp
 
+/**
+ * Отображает нижнюю панель навигации.
+ *
+ * @param navigation Контроллер навигации
+ */
 @Composable
 fun BottomBar(
-    navigation: NavController
+    navigation: NavController,
 ) {
     val navBackStackEntry by navigation.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination

@@ -28,6 +28,12 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Обработчик аудиосервиса, управляющий воспроизведением аудио через ExoPlayer
+ *
+ * @param context Контекст приложения
+ * @param exoPlayer Экземпляр ExoPlayer для воспроизведения аудиофайлов
+ */
 class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
     private val context: Context,
     private val exoPlayer: ExoPlayer,
@@ -49,6 +55,12 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         })
     }
 
+    /**
+     * Устанавливает список медиаэлементов для воспроизведения
+     *
+     * @param mediaItems Список медиаэлементов
+     * @param startIndex Индекс начального элемента
+     */
     fun setMediaItemList(mediaItems: List<MediaItem>, startIndex: Int) {
         serviceScope.launch {
             exoPlayer.setMediaItems(mediaItems, startIndex, 0)
@@ -56,6 +68,11 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Обрабатывает события, связанные с плеером
+     *
+     * @param playerEvent Событие плеера
+     */
     fun onPlayerEvents(
         playerEvent: PlayerEvent,
     ) = serviceScope.launch {
@@ -81,6 +98,11 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Вызывается при изменении состояния воспроизведения
+     *
+     * @param playbackState Новое состояние плеера
+     */
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
             ExoPlayer.STATE_READY -> _audioState.value =
@@ -88,6 +110,11 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Вызывается при изменении состояния воспроизведения (играет/пауза)
+     *
+     * @param isPlaying Флаг, указывающий, воспроизводится ли аудио
+     */
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         if (isPlaying) {
             serviceScope.launch(Dispatchers.Main) {
@@ -98,7 +125,9 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
-
+    /**
+     * Переключает воспроизведение между паузой и проигрыванием
+     */
     private suspend fun playOrPause() {
         if (exoPlayer.isPlaying) {
             pause()
@@ -107,16 +136,25 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Ставит воспроизведение на паузу
+     */
     private fun pause() {
         exoPlayer.pause()
         stopProgressUpdate()
     }
 
+    /**
+     * Запускает воспроизведение трека
+     */
     private suspend fun play() {
         exoPlayer.play()
         startProgressUpdate()
     }
 
+    /**
+     * Запускает обновление прогресса воспроизведения
+     */
     private suspend fun startProgressUpdate() = job.run {
         _audioState.value = AudioState.Playing(isPlaying = true)
         _audioState.value = AudioState.CurrentPlaying(exoPlayer.currentMediaItemIndex)
@@ -126,11 +164,17 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
+    /**
+     * Останавливает обновление прогресса воспроизведения
+     */
     private fun stopProgressUpdate() {
         job?.cancel()
         _audioState.value = AudioState.Playing(isPlaying = false)
     }
 
+    /**
+     * Загружает текущий трек
+     */
     @OptIn(UnstableApi::class)
     private fun downloadTrack() {
         val currentMedia = exoPlayer.currentMediaItem ?: return
@@ -164,6 +208,11 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         })
     }
 
+    /**
+     * Удаляет текущий трек
+     *
+     * @param isRemoveCurrentMedia Флаг, указывающий, следует ли удалить текущий трек из ExoPlayer
+     */
     @OptIn(UnstableApi::class)
     private fun removeTrack(isRemoveCurrentMedia: Boolean) {
         val currentMedia = exoPlayer.currentMediaItem ?: return

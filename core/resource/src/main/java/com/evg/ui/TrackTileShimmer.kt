@@ -25,6 +25,9 @@ import com.evg.ui.theme.BorderRadius
 import com.evg.ui.theme.DeezerPlayerTheme
 import kotlin.random.Random
 
+/**
+ * Заглушка для загрузки карточки трека с эффектом анимации
+ */
 @Composable
 fun TrackTileShimmer() {
     val height = 70.dp

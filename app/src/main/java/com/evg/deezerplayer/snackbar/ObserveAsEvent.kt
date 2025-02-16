@@ -9,6 +9,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
+/**
+ * Наблюдает за потоком событий и вызывает переданный обработчик при их получении
+ *
+ * @param flow Поток данных, за которым ведется наблюдение
+ * @param key1 Ключ для перезапуска эффекта при изменении значения
+ * @param key2 Ключ для перезапуска эффекта при изменении значения
+ * @param onEvent Обработчик события, вызываемый при получении нового значения из потока
+ */
 @Composable
 fun <T> ObserveAsEvent(
     flow: Flow<T>,

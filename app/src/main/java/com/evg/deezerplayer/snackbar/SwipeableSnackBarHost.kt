@@ -21,12 +21,20 @@ import androidx.wear.compose.material.rememberSwipeableState
 import androidx.wear.compose.material.swipeable
 import com.evg.ui.theme.AppTheme
 
+/**
+ * Определяет направление свайпа
+ */
 enum class SwipeDirection {
     Left,
     Initial,
     Right,
 }
 
+/**
+ * Отображает хост для всплывающих уведомлений с поддержкой свайпа
+ *
+ * @param hostState Состояние хоста всплывающих уведомлений
+ */
 @OptIn(ExperimentalWearMaterialApi::class)
 @Composable
 fun SwipeableSnackBarHost(hostState: SnackbarHostState) {

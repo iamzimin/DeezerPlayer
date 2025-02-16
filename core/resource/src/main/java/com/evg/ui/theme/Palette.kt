@@ -14,6 +14,7 @@ data class AppPalette(
     val textField: Color,
     val textFieldBackground: Color,
 
+    // SnackBar
     val snackBarBackground: Color,
 
     // BottomBar
@@ -36,6 +37,7 @@ val baseDarkPalette = AppPalette(
     textField = Color(0xFF6C8D6C),
     textFieldBackground = Color(0xFF1F321F),
 
+    // SnackBar
     snackBarBackground = Color(0xFF373737),
 
     // BottomBar
@@ -54,6 +56,7 @@ val baseLightPalette = AppPalette(
     textField = Color(0xFF6C8D6C),
     textFieldBackground = Color(0xFFE8F5E9),
 
+    // SnackBar
     snackBarBackground = Color(0xFFCDCDCD),
 
     // BottomBar

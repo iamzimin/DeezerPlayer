@@ -24,6 +24,11 @@ import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.VerticalPadding
 
+/**
+ * Компонент для отображения изображения и сообщения об отсутствии данных
+ *
+ * @param displayText Текст, который будет показан
+ */
 @Composable
 fun NotFound(
     displayText: String,

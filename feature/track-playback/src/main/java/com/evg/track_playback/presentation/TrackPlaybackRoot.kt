@@ -29,6 +29,14 @@ import com.evg.ui.snackbar.SnackBarEvent
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+/**
+ * Корневой экран воспроизведения трека
+ *
+ * @param viewModel ViewModel для управления воспроизведением
+ * @param modifier Модификатор для стилизации
+ * @param onPreviousScreen Функция для возврата на предыдущий экран
+ * @param onBackgroundImageReady Функция отправки в root url изображения
+ */
 @Composable
 fun TrackPlaybackRoot(
     viewModel: TrackPlaybackViewModel = hiltViewModel<TrackPlaybackViewModel>(),

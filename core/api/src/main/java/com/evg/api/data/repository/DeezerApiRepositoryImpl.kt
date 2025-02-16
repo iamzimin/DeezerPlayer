@@ -19,11 +19,21 @@ import java.net.ProtocolException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
+/**
+ * Реализация репозитория для работы с API Deezer
+ *
+ * @param deezerRetrofit Экземпляр Retrofit для выполнения сетевых запросов
+ */
 class DeezerApiRepositoryImpl(
     deezerRetrofit: Retrofit,
 ): DeezerApiRepository {
     private val deezerApi = deezerRetrofit.create(DeezerApi::class.java)
 
+    /**
+     * Выполняет безопасный вызов API, возвращая результат [ServerResult] с данными или ошибкой [NetworkError]
+     *
+     * @param apiCall Лямбда, выполняющая API-запрос
+     */
     private suspend fun <T> safeApiCall(apiCall: suspend () -> T): ServerResult<T, NetworkError> {
         return try {
             ServerResult.Success(apiCall())
@@ -51,15 +61,32 @@ class DeezerApiRepositoryImpl(
         }
     }
 
-
+    /**
+     * Получает список чартов
+     *
+     * @return Результат запроса с данными [ChartResponse] или ошибкой [NetworkError]
+     */
     override suspend fun getChart(): ServerResult<ChartResponse, NetworkError> {
         return safeApiCall { deezerApi.getChart() }
     }
 
+    /**
+     * Выполняет поиск треков по запросу и индексу
+     *
+     * @param query Запрос для поиска треков
+     * @param index Индекс результатов
+     * @return Результат запроса с данными [SearchTrackResponse] или ошибкой [NetworkError]
+     */
     override suspend fun searchTrackByPage(query: String, index: Int): ServerResult<SearchTrackResponse, NetworkError> {
         return safeApiCall { deezerApi.searchTrack(query = query, index = index) }
     }
 
+    /**
+     * Получает список треков альбома по идентификатору трека
+     *
+     * @param id Идентификатор трека
+     * @return Результат запроса со списком [TrackResponse] или ошибкой [NetworkError]
+     */
     override suspend fun getAlbumByTrackId(id: Long): ServerResult<List<TrackResponse>, NetworkError> {
         return safeApiCall {
             val trackResponse: TrackResponse = deezerApi.getTrackById(id = id)

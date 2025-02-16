@@ -15,20 +15,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.evg.resource.R
-import com.evg.ui.extensions.makeTransparent
 import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 
+/**
+ * Текстовое поле для поиска с дебаунсом ввода
+ *
+ * @param modifier Модификатор для стилизации поля
+ * @param onTextChangeDebounced Колбэк, вызываемый с задержкой при изменении текста (передает вводимый текст)
+ */
 @OptIn(FlowPreview::class)
 @Composable
 fun SearchTextField(

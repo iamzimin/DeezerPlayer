@@ -21,6 +21,12 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.evg.resource.R
 
+/**
+ * Отображает верхнюю панель навигации
+ *
+ * @param navigation Контроллер навигации
+ * @param onPreviousScreen Возврат на предыдущий экран
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(

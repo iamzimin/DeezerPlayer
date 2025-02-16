@@ -3,6 +3,9 @@ package com.evg.ui.theme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 
+/**
+ * Объект, предоставляющий доступ к цветовой палитре и типографии приложения
+ */
 object AppTheme {
     val colors: AppPalette
         @Composable

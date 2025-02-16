@@ -1,6 +1,5 @@
 package com.evg.track_playback.presentation.notification
 
-
 import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Bitmap
@@ -14,6 +13,12 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import com.evg.resource.R
 
+/**
+ * Адаптер для уведомлений аудиоплеера
+ *
+ * @property context Контекст приложения
+ * @property pendingIntent Интент для обработки кликов по уведомлению
+ */
 @UnstableApi
 class AudioNotificationAdapter(
     private val context: Context,

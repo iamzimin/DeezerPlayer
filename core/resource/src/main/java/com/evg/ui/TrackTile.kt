@@ -26,6 +26,14 @@ import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.BorderRadius
 import com.evg.ui.theme.DeezerPlayerTheme
 
+/**
+ * Карточка трека с изображением альбома, названием и именем исполнителя
+ *
+ * @param albumCover Ссылка на обложку альбома
+ * @param trackTitle Название трека
+ * @param artistName Имя исполнителя
+ * @param onClick Колбэк, вызываемый при нажатии на карточку
+ */
 @Composable
 fun TrackTile(
     albumCover: String,

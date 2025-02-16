@@ -18,7 +18,13 @@ import com.evg.ui.theme.DeezerPlayerTheme
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 
-
+/**
+ * Анимированный компонент обложки альбома
+ *
+ * @param modifier Модификатор для настройки внешнего вида и расположения
+ * @param isSongPlaying Флаг, указывающий, воспроизводится ли трек
+ * @param albumCover URL изображения обложки альбома
+ */
 @OptIn(FlowPreview::class)
 @Composable
 fun AlbumCoverAnimation(

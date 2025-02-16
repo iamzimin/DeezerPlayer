@@ -18,6 +18,14 @@ import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.HorizontalPadding
 import com.evg.ui.theme.VerticalPadding
 
+/**
+ * Экран загруженных треков
+ *
+ * @param state Текущее состояние экрана
+ * @param dispatch Функция для отправки действий
+ * @param modifier Модификатор для стилизации
+ * @param onPlayerScreen Колбек для перехода на экран плеера
+ */
 @Composable
 fun TracksDownloadedScreen(
     state: TracksDownloadedState,
@@ -25,8 +33,6 @@ fun TracksDownloadedScreen(
     modifier: Modifier = Modifier,
     onPlayerScreen: (id: Long) -> Unit,
 ) {
-    val tracksDownloaded = state.tracksDownloaded
-
     Column(
         modifier = modifier
             .padding(
@@ -45,7 +51,7 @@ fun TracksDownloadedScreen(
         TracksLazyColumn(
             isSwipeAvailable = false,
             isTracksLoading = state.isTracksLoading,
-            tracks = tracksDownloaded,
+            tracks = state.tracksDownloaded,
             onClick = onPlayerScreen,
         )
     }

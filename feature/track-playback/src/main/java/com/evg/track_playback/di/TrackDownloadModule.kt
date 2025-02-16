@@ -57,7 +57,7 @@ object TrackDownloadModule {
     @Singleton
     fun provideCache(@ApplicationContext context: Context): Cache {
         return SimpleCache(
-            File(context.cacheDir, "mediaCache"),
+            File(context.filesDir, "mediaCache"),
             NoOpCacheEvictor(),
             StandaloneDatabaseProvider(context)
         )

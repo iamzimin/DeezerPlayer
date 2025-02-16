@@ -16,6 +16,13 @@ import com.evg.ui.snackbar.SnackBarEvent
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+/**
+ * Корневой экран чарта с отображением списка треков
+ *
+ * @param viewModel ViewModel для управления состоянием чарта
+ * @param modifier Модификатор для стилизации компонента
+ * @param onPlayerScreen Колбэк, вызываемый при выборе трека для перехода на экран плеера по id
+ */
 @Composable
 fun ChartRoot(
     viewModel: ChartViewModel = hiltViewModel<ChartViewModel>(),

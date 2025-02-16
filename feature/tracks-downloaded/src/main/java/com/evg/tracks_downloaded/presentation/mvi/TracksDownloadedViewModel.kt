@@ -9,6 +9,11 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
+/**
+ * ViewModel для управления загруженными треками
+ *
+ * @param tracksDownloadedRepository Репозиторий загруженных треков
+ */
 @HiltViewModel
 class TracksDownloadedViewModel @Inject constructor(
     private val tracksDownloadedRepository: TracksDownloadedRepository
@@ -21,6 +26,9 @@ class TracksDownloadedViewModel @Inject constructor(
         subscribeToDatabaseChanges()
     }
 
+    /**
+     * Подписывается на изменения в базе данных и обновляет состояние
+     */
     private fun subscribeToDatabaseChanges() = intent {
         tracksDownloadedRepository.getTracksDownloadedFlow().collect { tracks ->
             reduce { state.copy(isTracksLoading = true) }
@@ -33,13 +41,22 @@ class TracksDownloadedViewModel @Inject constructor(
         }
     }
 
-
+    /**
+     * Обрабатывает действия пользователя
+     *
+     * @param action Действие, которое нужно выполнить
+     */
     fun dispatch(action: TracksDownloadedAction) {
         when (action) {
             is TracksDownloadedAction.FilterTracksOnScreen -> searchTrack(query = action.query)
         }
     }
 
+    /**
+     * Фильтрует треки по запросу
+     *
+     * @param query Поисковый запрос
+     */
     private fun searchTrack(query: String) = intent {
         val filteredTracks = if (query.isBlank()) {
             cachedTracks

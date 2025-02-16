@@ -11,7 +11,5 @@ sealed class TrackPlaybackAction {
     data class PlayByIndex(val index: Int): TrackPlaybackAction()
     data object SeekToNext: TrackPlaybackAction()
     data object SeekToPrev: TrackPlaybackAction()
-    //data object Backward: TrackPlaybackAction()
-    //data object Forward: TrackPlaybackAction()
     data class UpdateProgress(val newProgress: Float): TrackPlaybackAction()
 }

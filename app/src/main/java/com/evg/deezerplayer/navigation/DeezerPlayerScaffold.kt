@@ -8,15 +8,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.evg.ui.theme.AppTheme
 
+/**
+ * Scaffold добавляющий отступы
+ *
+ * @param modifier Модификатор для кастомизации
+ * @param isContainerTransparent Флаг, указывающий, является фон прозрачным
+ * @param content Контент экрана с отступами
+ */
 @Composable
 fun DeezerPlayerScaffold(
     modifier: Modifier = Modifier,
-    isContainerTransient: Boolean = false,
+    isContainerTransparent: Boolean = false,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = if (isContainerTransient) Color.Transparent else AppTheme.colors.background,
+        containerColor = if (isContainerTransparent) Color.Transparent else AppTheme.colors.background,
     ) { paddingValues ->
         content(paddingValues)
     }

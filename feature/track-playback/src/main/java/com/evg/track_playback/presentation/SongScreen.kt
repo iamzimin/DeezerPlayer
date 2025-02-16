@@ -9,7 +9,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +42,18 @@ import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.HorizontalPadding
 
+/**
+ * Экран воспроизведения трека
+ *
+ * @param dispatch Функция для отправки действий воспроизведения
+ * @param state Текущее состояние плейлиста
+ * @param isPlaying Флаг, указывающий, играет ли трек
+ * @param progress Текущий прогресс воспроизведения
+ * @param duration Длительность трека
+ * @param isTrackDownloading Флаг загрузки трека
+ * @param onPreviousScreen Функция для возврата на предыдущий экран
+ * @param onBackgroundImageReady Функция отправки в root url изображения
+ */
 @Composable
 fun SongScreen(
     dispatch: (TrackPlaybackAction) -> Unit,

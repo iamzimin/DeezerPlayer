@@ -21,6 +21,14 @@ import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.BorderRadius
 import com.evg.ui.theme.DeezerPlayerTheme
 
+/**
+ * Компонент отображения обложки альбома с анимацией
+ *
+ * @param modifier Модификатор для настройки внешнего вида и расположения
+ * @param scale Коэффициент масштабирования обложки
+ * @param albumCover URL изображения обложки альбома
+ * @param isSongPlaying Флаг, указывающий, воспроизводится ли трек
+ */
 @Composable
 fun AlbumCover(
     modifier: Modifier = Modifier,

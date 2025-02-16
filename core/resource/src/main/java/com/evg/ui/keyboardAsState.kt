@@ -10,10 +10,18 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
+/**
+ * Состояние клавиатуры (открыта или закрыта)
+ */
 enum class Keyboard {
     Opened, Closed
 }
 
+/**
+ * Отслеживает состояние клавиатуры и предоставляет его в виде [State]
+ *
+ * @return [State] с текущим состоянием клавиатуры ([Keyboard.Opened] или [Keyboard.Closed])
+ */
 @Composable
 fun keyboardAsState(): State<Keyboard> {
     val keyboardState = remember { mutableStateOf(Keyboard.Closed) }

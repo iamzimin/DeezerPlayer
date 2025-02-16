@@ -19,7 +19,12 @@ import coil.compose.SubcomposeAsyncImage
 import com.evg.resource.R
 import com.evg.ui.theme.BorderRadius
 
-
+/**
+ * Отображает изображение альбома по ссылке
+ *
+ * @param modifier Модификатор для стилизации изображения
+ * @param albumCover Ссылка на обложку альбома
+ */
 @Composable
 fun PreviewImage(
     modifier: Modifier,
@@ -44,6 +49,9 @@ fun PreviewImage(
     )
 }
 
+/**
+ * Отображает заглушку при ошибке загрузки изображения
+ */
 @Composable
 private fun ImageError() {
     val backgroundColor = if (isSystemInDarkTheme()) Color.Gray else Color.LightGray

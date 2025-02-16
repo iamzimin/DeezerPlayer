@@ -14,6 +14,11 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
+/**
+ * ViewModel для управления данными чарта
+ *
+ * @param chartRepository Репозиторий для работы с чартами
+ */
 @HiltViewModel
 class ChartViewModel @Inject constructor(
     private val chartRepository: ChartRepository,
@@ -24,6 +29,11 @@ class ChartViewModel @Inject constructor(
         getChart()
     }
 
+    /**
+     * Обрабатывает переданные действия
+     *
+     * @param action Действие, которое необходимо выполнить
+     */
     fun dispatch(action: ChartAction) {
         when (action) {
             is ChartAction.GetChart -> getChart()
@@ -31,6 +41,9 @@ class ChartViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Загружает список треков чарта
+     */
     private fun getChart() = intent {
         viewModelScope.launch {
             reduce { state.copy(isChartLoading = true) }
@@ -46,6 +59,11 @@ class ChartViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Выполняет поиск треков по запросу
+     *
+     * @param query Строка запроса для поиска
+     */
     private fun searchTrack(query: String) = intent {
         viewModelScope.launch {
             reduce { state.copy(isChartLoading = true) }

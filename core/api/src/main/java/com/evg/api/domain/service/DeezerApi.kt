@@ -1,6 +1,5 @@
 package com.evg.api.domain.service
 
-import com.evg.api.domain.models.AlbumResponse
 import com.evg.api.domain.models.ChartResponse
 import com.evg.api.domain.models.SearchTrackResponse
 import com.evg.api.domain.models.TrackResponse

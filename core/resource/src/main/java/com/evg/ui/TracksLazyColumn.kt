@@ -15,6 +15,14 @@ import com.evg.ui.theme.AppTheme
 import com.evg.ui.theme.DeezerPlayerTheme
 import com.evg.ui.theme.LazyColumnSpacedBy
 
+/**
+ * Отображает список треков в виде [LazyColumn]
+ *
+ * @param isSwipeAvailable Флаг, определяющий доступность свайпа
+ * @param isTracksLoading Флаг, указывающий, загружаются ли треки
+ * @param tracks Список треков для отображения
+ * @param onClick Колбэк, вызываемый при нажатии на трек (передает ID трека)
+ */
 @Composable
 fun TracksLazyColumn(
     isSwipeAvailable: Boolean = true,

@@ -28,6 +28,14 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+/**
+ * Экран чарта с отображением списка треков и поиском
+ *
+ * @param state Текущее состояние чарта
+ * @param dispatch Функция для отправки действий в ViewModel
+ * @param modifier Модификатор для стилизации компонента
+ * @param onPlayerScreen Колбэк, вызываемый при выборе трека для перехода на экран плеера
+ */
 @Composable
 fun ChartScreen(
     state: ChartState,

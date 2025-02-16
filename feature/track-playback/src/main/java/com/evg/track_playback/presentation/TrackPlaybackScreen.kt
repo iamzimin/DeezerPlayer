@@ -1,15 +1,12 @@
 package com.evg.track_playback.presentation
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.evg.resource.R
@@ -24,6 +21,15 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+/**
+ * Основной экран воспроизведения трека
+ *
+ * @param state Текущее состояние воспроизведения
+ * @param dispatch Функция для отправки действий воспроизведения
+ * @param modifier Модификатор для стилизации
+ * @param onPreviousScreen Функция для возврата на предыдущий экран
+ * @param onBackgroundImageReady Функция отправки в root url изображения
+ */
 @Composable
 fun TrackPlaybackScreen(
     state: TrackPlaybackState,
