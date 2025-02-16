@@ -12,5 +12,6 @@ sealed class TrackPlaybackSideEffect {
 
     data object TrackDownloadSuccess : TrackPlaybackSideEffect()
     data class TrackDownloadFail(val e: Exception?): TrackPlaybackSideEffect()
+    data object TrackSaveFail : TrackPlaybackSideEffect()
     data object TrackRemoveSuccess : TrackPlaybackSideEffect()
 }

@@ -50,6 +50,7 @@ fun TrackPlaybackRoot(
 
     val context = LocalContext.current
     val trackDownloadedString = stringResource(R.string.track_success_download)
+    val trackSaveErrorString = stringResource(R.string.error_track_save)
     val updateString = stringResource(id = R.string.update)
     val trackRemoveString = stringResource(R.string.track_success_remove)
     var isServiceRunning by rememberSaveable { mutableStateOf(false) }
@@ -91,6 +92,9 @@ fun TrackPlaybackRoot(
             }
             is TrackPlaybackSideEffect.TrackDownloadFail -> {
                 SnackBarController.sendEvent(SnackBarEvent(getLocalizedExceptionMessage(context, sideEffect.e)))
+            }
+            TrackPlaybackSideEffect.TrackSaveFail -> {
+                SnackBarController.sendEvent(SnackBarEvent(trackSaveErrorString))
             }
             is TrackPlaybackSideEffect.TrackRemoveSuccess -> {
                 SnackBarController.sendEvent(SnackBarEvent(trackRemoveString))

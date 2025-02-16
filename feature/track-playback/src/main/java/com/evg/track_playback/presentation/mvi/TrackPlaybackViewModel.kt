@@ -271,7 +271,8 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
         val uiState = container.stateFlow.value.playlistState
         if (uiState !is PlaylistState.Ready) return@intent
 
-        updateTrackInDatabase(track, isDownloaded)
+        val isSuccessUpdate = updateTrackInDatabase(track, isDownloaded)
+        if (!isSuccessUpdate) return@intent
 
         if (!isOnlineMode && isDownloaded) {
             val (updatedList, newCurrentIndex) = playlistHandler.removeTrackAndComputeIndex(track)
@@ -297,17 +298,24 @@ class TrackPlaybackViewModel @OptIn(UnstableApi::class) @Inject constructor(
      *
      * @param track Трек для обновления
      * @param isDownloaded Флаг, указывающий, был ли трек удален
+     * @param успешно ли обновление базы
      */
     private suspend fun Syntax<TrackPlaybackState, TrackPlaybackSideEffect>.updateTrackInDatabase(
         track: TrackData,
         isDownloaded: Boolean,
-    ) {
-        if (isDownloaded) {
+    ): Boolean {
+        return if (isDownloaded) {
             trackPlaybackRepository.removeTrackByIdFromDatabase(track.trackID)
             postSideEffect(TrackPlaybackSideEffect.TrackRemoveSuccess)
+            true
         } else {
-            trackPlaybackRepository.saveTrackToDatabase(track)
-            postSideEffect(TrackPlaybackSideEffect.TrackDownloadSuccess)
+            val isSuccessSave = trackPlaybackRepository.saveTrackToDatabase(track)
+            if (isSuccessSave) {
+                postSideEffect(TrackPlaybackSideEffect.TrackDownloadSuccess)
+            } else {
+                postSideEffect(TrackPlaybackSideEffect.TrackSaveFail)
+            }
+            isSuccessSave
         }
     }
 

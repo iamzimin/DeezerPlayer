@@ -52,7 +52,7 @@ fun MainScreen() {
 
     LaunchedEffect(imageUrl) {
         if (imageUrl == null) {
-            delay(1000L)
+            delay(600L)
         }
         debouncedImageUrl = imageUrl
     }

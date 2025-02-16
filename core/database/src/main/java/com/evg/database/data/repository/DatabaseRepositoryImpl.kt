@@ -1,8 +1,10 @@
 package com.evg.database.data.repository
 
+import android.database.sqlite.SQLiteFullException
 import com.evg.database.data.storage.TracksDatabase
 import com.evg.database.domain.models.TracksDBO
 import com.evg.database.domain.repository.DatabaseRepository
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -35,9 +37,16 @@ class DatabaseRepositoryImpl(
      * Добавляет трек в базу данных
      *
      * @param track Объект [TracksDBO] для вставки
+     * @return Сохранена запись или нет
      */
-    override suspend fun insertTrack(track: TracksDBO) {
-        tracksDatabase.tracksDao.insertTrack(track)
+    override suspend fun insertTrack(track: TracksDBO): Boolean {
+        return try {
+            tracksDatabase.tracksDao.insertTrack(track)
+            true
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+            false
+        }
     }
 
     /**

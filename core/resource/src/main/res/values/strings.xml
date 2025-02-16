@@ -14,6 +14,7 @@
     <string name="track_download">Track download</string>
     <string name="track_success_download">Track was downloaded successfully</string>
     <string name="track_success_remove">Track was removed successfully</string>
+    <string name="error_track_save">Track saving error</string>
     <string name="playback">Playback</string>
     <string name="downloading_audio">Downloading audio</string>
     <string name="unknown">Unknown</string>

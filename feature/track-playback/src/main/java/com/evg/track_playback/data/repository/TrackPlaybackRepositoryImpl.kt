@@ -50,9 +50,10 @@ class TrackPlaybackRepositoryImpl(
      * Сохраняет трек в базе данных
      *
      * @param track Трек для сохранения
+     * @return Сохранена запись или нет
      */
-    override suspend fun saveTrackToDatabase(track: TrackData) {
-        databaseRepository.insertTrack(track = track.toTracksDBO())
+    override suspend fun saveTrackToDatabase(track: TrackData): Boolean {
+        return databaseRepository.insertTrack(track = track.toTracksDBO())
     }
 
     /**
