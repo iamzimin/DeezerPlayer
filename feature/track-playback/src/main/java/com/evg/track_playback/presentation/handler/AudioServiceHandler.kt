@@ -98,10 +98,6 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
         }
     }
 
-    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        _audioState.value = AudioState.CurrentPlaying(exoPlayer.currentMediaItemIndex)
-    }
-
 
     private suspend fun playOrPause() {
         if (exoPlayer.isPlaying) {
