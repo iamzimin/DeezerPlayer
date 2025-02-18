@@ -126,6 +126,18 @@ class AudioServiceHandler @OptIn(UnstableApi::class) @Inject constructor(
     }
 
     /**
+     * Вызывается при смене трека в плеере
+     *
+     * @param mediaItem Новый медиа-элемент
+     * @param reason Причина смены трека
+     */
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
+            _audioState.value = AudioState.CurrentPlaying(exoPlayer.currentMediaItemIndex)
+        }
+    }
+
+    /**
      * Переключает воспроизведение между паузой и проигрыванием
      */
     private suspend fun playOrPause() {

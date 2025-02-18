@@ -183,7 +183,7 @@ fun SongScreen(
             seekTo = { dispatch(TrackPlaybackAction.SeekTo(it)) }
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         ActionButtons(
             modifier = Modifier.fillMaxWidth(),
