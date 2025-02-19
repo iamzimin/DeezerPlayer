@@ -5,6 +5,7 @@
 
 ## Инструкция по запуску
 - [Скачать apk](https://github.com/iamzimin/DeezerPlayer/releases/latest) последней версии и установить.
+
 - <del>[Скачать apk](https://github.com/iamzimin/DeezerPlayer/releases/tag/DeezerPlayer_v1.0) от 16.02.2025 и установить.</del>
 <br><br>
 
