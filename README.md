@@ -1,10 +1,11 @@
 # Deezer Player
 
-Стек: Kotlin, Clean Architecture, Jetpack Compose, Coroutine, MVI, Retrofit, Gson, Room, Dagger Hilt, Jetpack Navigation, Paging, Media, Firebase Crashlytics, JUnit.
+Стек: Kotlin, Clean Architecture, Jetpack Compose, Coroutine, MVI, Retrofit, Kotlinx Serialization, Room, Dagger Hilt, Jetpack Navigation, Paging, Media, Firebase Crashlytics, JUnit.
 <br><br>
 
 ## Инструкция по запуску
-- [Скачать apk](https://github.com/iamzimin/DeezerPlayer/releases/latest) файл и установить.
+- [Скачать apk](https://github.com/iamzimin/DeezerPlayer/releases/latest) последней версии и установить.
+- <del>[Скачать apk](https://github.com/iamzimin/DeezerPlayer/releases/tag/DeezerPlayer_v1.0) от 16.02.2025 и установить.</del>
 <br><br>
 
 ## Функционал приложения
