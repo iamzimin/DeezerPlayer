@@ -1,7 +1,9 @@
 package com.evg.api.domain.models
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class WrapperTrackData(
-    @SerializedName("data") val data: List<TrackResponse>
+    @SerialName("data") val data: List<TrackResponse>
 )

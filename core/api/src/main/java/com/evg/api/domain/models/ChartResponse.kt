@@ -1,7 +1,9 @@
 package com.evg.api.domain.models
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class ChartResponse(
-    @SerializedName("tracks") val tracks: WrapperTrackData
+    @SerialName("tracks") val tracks: WrapperTrackData
 )

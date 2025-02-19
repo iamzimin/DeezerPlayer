@@ -34,10 +34,8 @@ class SearchTrackPageSourceRemote @Inject constructor(
 
         return when (response) {
             is ServerResult.Success -> {
-                val data = response.data.data ?: return LoadResult.Error(Exception("Data is null"))
-
                 return LoadResult.Page(
-                    data = data.map { ServerResult.Success(it) },
+                    data = response.data.data.map { ServerResult.Success(it) },
                     prevKey = getIndexFromUrl(response.data.prev),
                     nextKey = getIndexFromUrl(response.data.next),
                 )

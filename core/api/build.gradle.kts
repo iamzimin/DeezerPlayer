@@ -39,7 +39,11 @@ dependencies {
 
     //Retrofit
     implementation(libs.retrofit)
-    implementation(libs.converter.gson)
+    implementation (libs.retrofit.converter)
+    implementation(libs.okhttp)
+
+    // Serialization
+    implementation(libs.kotlinx.serialization)
 
     // Paging
     implementation(libs.jetpack.paging.common)
@@ -47,6 +51,9 @@ dependencies {
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+
+    // Firebase
+    implementation(libs.firebase.crashlytics)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

@@ -1,11 +1,13 @@
 package com.evg.api.domain.models
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class TrackResponse(
-    @SerializedName("id") val id: Long,
-    @SerializedName("title") val title: String,
-    @SerializedName("preview") val preview: String,
-    @SerializedName("artist") val artist: ArtistResponse,
-    @SerializedName("album") val album: AlbumResponse,
+    @SerialName("id") val id: Long,
+    @SerialName("title") val title: String,
+    @SerialName("preview") val preview: String,
+    @SerialName("artist") val artist: ArtistResponse,
+    @SerialName("album") val album: AlbumResponse,
 )

@@ -1,9 +1,11 @@
 package com.evg.api.domain.models
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class SearchTrackResponse(
-    @SerializedName("data") val data: List<TrackResponse>?,
-    @SerializedName("prev") val prev: String?,
-    @SerializedName("next") val next: String?,
+    @SerialName("data") val data: List<TrackResponse>,
+    @SerialName("prev") val prev: String? = null,
+    @SerialName("next") val next: String? = null,
 )

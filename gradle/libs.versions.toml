@@ -17,7 +17,8 @@ serialization = "1.8.0"
 hilt = "2.55"
 hiltNavigation = "1.2.0"
 retrofit = "2.11.0"
-converterGson = "2.3.0"
+retrofitConverter = "0.8.0"
+okhttp = "4.12.0"
 room = "2.6.1"
 coil = "2.7.0"
 appcompatVersion = "1.7.0"
@@ -72,7 +73,8 @@ shimmer-compose = { group = "com.valentinilk.shimmer", name = "compose-shimmer",
 
 # Retrofit
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" }
+retrofit-converter = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitConverter" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 
 # Room
 room-common = { group = "androidx.room", name = "room-common", version.ref = "room" }

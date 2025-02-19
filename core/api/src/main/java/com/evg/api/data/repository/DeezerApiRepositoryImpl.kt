@@ -8,10 +8,11 @@ import com.evg.api.domain.repository.DeezerApiRepository
 import com.evg.api.domain.service.DeezerApi
 import com.evg.api.domain.utils.NetworkError
 import com.evg.api.domain.utils.ServerResult
-import com.google.gson.JsonParseException
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import java.net.ConnectException
@@ -37,7 +38,8 @@ class DeezerApiRepositoryImpl(
     private suspend fun <T> safeApiCall(apiCall: suspend () -> T): ServerResult<T, NetworkError> {
         return try {
             ServerResult.Success(apiCall())
-        } catch (e: JsonParseException) {
+        } catch (e: SerializationException) {
+            FirebaseCrashlytics.getInstance().recordException(e)
             ServerResult.Error(NetworkError.SERIALIZATION)
         } catch (e: HttpException) {
             when (e.code()) {
@@ -81,7 +83,7 @@ class DeezerApiRepositoryImpl(
         if (query.isBlank()) {
             return ServerResult.Success(
                 SearchTrackResponse(
-                    data = null,
+                    data = emptyList(),
                     prev = null,
                     next = null,
                 )
